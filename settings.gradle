@@ -1,0 +1,2 @@
+rootProject.name='Metronome Amplified'
+include ':app'
