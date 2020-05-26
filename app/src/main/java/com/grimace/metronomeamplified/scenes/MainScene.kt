@@ -13,13 +13,14 @@ class MainScene : GlScene {
         get() = listOf(AlphaTexture::class.java)
 
     override val requiredTextures: List<Class<out GlTexture>>
-        get() = listOf(WoodenTexture::class.java)
+        get() = listOf(WoodenTexture::class.java, WhiteTranslucentShapesTexture::class.java)
 
     override val requiredVertexBuffers: List<Class<out GlVertexBuffer>>
-        get() = listOf(FullBackgroundBuffer::class.java)
+        get() = listOf(MainScreenBackgroundVertexBuffer::class.java)
 
     private var shaderProgramHandle = 0
-    private var textureHandle = 0
+    private var backgroundTextureHandle = 0
+    private var overlayTextureHandle = 0
     private var vertexBufferHandle = 0
     private var vertexAttrib = 0
     private var textureCoordAttrib = 0
@@ -32,8 +33,9 @@ class MainScene : GlScene {
     ) {
         // Pre-fetch handles for resources
         shaderProgramHandle = shaders[AlphaTexture::class.java]?.programHandle ?: 0
-        textureHandle = textures[WoodenTexture::class.java]?.textureHandle ?: 0
-        vertexBufferHandle = vertexBuffers[FullBackgroundBuffer::class.java]?.vertexBufferHandle ?: 0
+        backgroundTextureHandle = textures[WoodenTexture::class.java]?.textureHandle ?: 0
+        overlayTextureHandle = textures[WhiteTranslucentShapesTexture::class.java]?.textureHandle ?: 0
+        vertexBufferHandle = vertexBuffers[MainScreenBackgroundVertexBuffer::class.java]?.vertexBufferHandle ?: 0
 
         // Get attributes and make sure they're enabled
         vertexAttrib = GLES20.glGetAttribLocation(shaderProgramHandle, "aPosition")
@@ -49,11 +51,12 @@ class MainScene : GlScene {
 
         // Clear
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+        GLES20.glEnable(GLES20.GL_BLEND)
+        GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
 
-        // Set program, bind texture
+        // Set program and active texture
         GLES20.glUseProgram(shaderProgramHandle)
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle)
         GLES20.glUniform1i(textureSampler, 0)
 
         // Load vertex array
@@ -65,8 +68,13 @@ class MainScene : GlScene {
             2, GLES20.GL_FLOAT, false,
             5 * FLOAT_SIZE_BYTES, 3 * FLOAT_SIZE_BYTES)
 
-        // Draw arrays
+        // Draw background vertices
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backgroundTextureHandle)
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6)
+
+        // Draw overlay vertices
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, overlayTextureHandle)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 6, 48)
 
         // Unbind
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)

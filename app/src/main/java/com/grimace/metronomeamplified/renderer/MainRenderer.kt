@@ -32,6 +32,7 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer {
         textureCache.requireTextures(context, scene.requiredTextures)
         vertexBufferCache.requireVertexBuffers(
             scene.requiredVertexBuffers,
+            context.resources,
             surfaceWidth,
             surfaceHeight)
         scene.onResourcesAvailable(shaderCache, textureCache, vertexBufferCache)
@@ -57,10 +58,12 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer {
     }
 
     private fun verifyTopmostScene() {
+        val context: Context = activity.get() ?: return
         if (sceneStack.isNotEmpty()) {
             val topScene = sceneStack.peek()
             vertexBufferCache.regenerateVertexBuffers(
                 topScene.requiredVertexBuffers,
+                context.resources,
                 surfaceWidth,
                 surfaceHeight)
         }
