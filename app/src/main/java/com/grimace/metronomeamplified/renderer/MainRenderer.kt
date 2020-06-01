@@ -78,7 +78,7 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, width, height)
         surfaceWidth = width
         surfaceHeight = height
-        vertexBufferCache.invalidateAll()
+        vertexBufferCache.invalidateSizeDependentBuffers()
         verifyTopmostScene()
     }
 

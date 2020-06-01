@@ -15,13 +15,15 @@ sealed class GlVertexBuffer {
 
     private var isValid = false
 
+    abstract val isWindowSizeDependent: Boolean
+
     protected abstract fun generateVerticesForSize(resources: Resources, width: Int, height: Int): FloatBuffer
 
     fun invalidate() {
         isValid = false
     }
 
-    fun generateNewVertexBufferForSize(resources: Resources, width: Int, height: Int) {
+    fun generateNewVertexBuffer(resources: Resources, width: Int, height: Int) {
 
         // Don't regenerate needlessly
         if (isValid) {
@@ -32,10 +34,10 @@ sealed class GlVertexBuffer {
         vertexBufferHandle = createBuffer()
 
         // Get vertex data for this screen size if possible, and load into the buffer
-        updateVertexBufferForSize(resources, width, height)
+        updateIfNeeded(resources, width, height)
     }
 
-    fun updateVertexBufferForSize(resources: Resources, width: Int, height: Int) {
+    fun updateIfNeeded(resources: Resources, width: Int, height: Int) {
 
         // Don't regenerate needlessly, or if the size is invalid
         if (isValid || width == 0 || height == 0 || vertexBufferHandle == GLES20.GL_NONE) {
@@ -83,6 +85,9 @@ sealed class GlVertexBuffer {
 }
 
 class MainScreenBackgroundVertexBuffer : GlVertexBuffer() {
+
+    override val isWindowSizeDependent: Boolean = true
+
     override fun generateVerticesForSize(resources: Resources, width: Int, height: Int): FloatBuffer {
 
         val marginDips = 16.0f
