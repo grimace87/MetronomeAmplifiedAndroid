@@ -13,6 +13,9 @@ class VertexBufferCache {
                 val vertexBuffer: GlVertexBuffer = bufferClass.newInstance()
                 vertexBuffer.generateNewVertexBuffer(resources, width, height)
                 vertexBuffers[bufferClass] = vertexBuffer
+            } else {
+                val vertexBuffer = vertexBuffers[bufferClass]
+                vertexBuffer?.updateIfNeeded(resources, width, height)
             }
         }
     }
