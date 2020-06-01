@@ -74,7 +74,7 @@ class MainScene : GlScene {
 
         // Draw overlay vertices
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, overlayTextureHandle)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 6, 48)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 6, 108)
 
         // Unbind
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)
