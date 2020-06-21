@@ -32,7 +32,7 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer {
         textureCache.requireTextures(context, scene.requiredTextures)
         vertexBufferCache.requireVertexBuffers(
             scene.requiredVertexBuffers,
-            context.resources,
+            context,
             surfaceWidth,
             surfaceHeight)
         scene.onResourcesAvailable(shaderCache, textureCache, vertexBufferCache)
@@ -63,7 +63,7 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer {
             val topScene = sceneStack.peek()
             vertexBufferCache.regenerateVertexBuffers(
                 topScene.requiredVertexBuffers,
-                context.resources,
+                context,
                 surfaceWidth,
                 surfaceHeight)
         }

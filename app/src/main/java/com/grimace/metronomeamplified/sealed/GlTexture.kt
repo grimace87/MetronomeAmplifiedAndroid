@@ -10,7 +10,7 @@ import java.nio.ByteBuffer
 import kotlin.math.max
 import kotlin.math.sqrt
 
-sealed class GlTexture() {
+sealed class GlTexture {
 
     var textureHandle: Int = 0
         private set
@@ -42,6 +42,15 @@ sealed class GlTexture() {
         GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0)
         return textures[0]
+    }
+}
+
+/**
+ * Font texture - opens from file
+ */
+class OrkneyFontTexture : GlTexture() {
+    override fun getBitmap(context: Context): Bitmap {
+        return context.assets.openAsBitmap("Orkney.png")
     }
 }
 

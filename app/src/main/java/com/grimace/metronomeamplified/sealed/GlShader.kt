@@ -76,3 +76,9 @@ class AlphaTexture : GlShader("alpha_texture.vert", "alpha_texture.frag") {
 
     }
 }
+
+class FontShader : GlShader("font_shader.vert", "font_shader.frag") {
+    override fun initialiseSubclass() {
+
+    }
+}

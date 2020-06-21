@@ -15,7 +15,7 @@ fun AssetManager.openAsString(assetName: String): String {
     val bufferedReader = BufferedReader(InputStreamReader(stream))
     var line: String? = bufferedReader.readLine()
     while (line != null) {
-        stringBuilder.append(line)
+        stringBuilder.appendln(line)
         line = bufferedReader.readLine()
     }
     return stringBuilder.toString()

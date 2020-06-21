@@ -1,7 +1,8 @@
 package com.grimace.metronomeamplified.sealed
 
-import android.content.res.Resources
+import android.content.Context
 import android.opengl.GLES20
+import com.grimace.metronomeamplified.utils.Font
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -10,6 +11,17 @@ const val FLOAT_SIZE_BYTES = 4
 
 sealed class GlVertexBuffer {
 
+    protected companion object {
+
+        private var orkneyInstance: Font? = null
+
+        fun getOrkneyFontDescription(context: Context): Font {
+            val font: Font = orkneyInstance ?: Font.fromAsset(context, "Orkney.fnt")
+            orkneyInstance = font
+            return font
+        }
+    }
+
     var vertexBufferHandle: Int = GLES20.GL_NONE
         private set
 
@@ -17,13 +29,13 @@ sealed class GlVertexBuffer {
 
     abstract val isWindowSizeDependent: Boolean
 
-    protected abstract fun generateVerticesForSize(resources: Resources, width: Int, height: Int): FloatBuffer
+    protected abstract fun generateVerticesForSize(context: Context, width: Int, height: Int): FloatBuffer
 
     fun invalidate() {
         isValid = false
     }
 
-    fun generateNewVertexBuffer(resources: Resources, width: Int, height: Int) {
+    fun generateNewVertexBuffer(context: Context, width: Int, height: Int) {
 
         // Don't regenerate needlessly
         if (isValid) {
@@ -34,10 +46,10 @@ sealed class GlVertexBuffer {
         vertexBufferHandle = createBuffer()
 
         // Get vertex data for this screen size if possible, and load into the buffer
-        updateIfNeeded(resources, width, height)
+        updateIfNeeded(context, width, height)
     }
 
-    fun updateIfNeeded(resources: Resources, width: Int, height: Int) {
+    fun updateIfNeeded(context: Context, width: Int, height: Int) {
 
         // Don't regenerate needlessly, or if the size is invalid
         if (isValid || width == 0 || height == 0 || vertexBufferHandle == GLES20.GL_NONE) {
@@ -45,7 +57,7 @@ sealed class GlVertexBuffer {
         }
 
         // Generate the data and upload it into the buffer object
-        val vertexData = generateVerticesForSize(resources, width, height)
+        val vertexData = generateVerticesForSize(context, width, height)
         updateBuffer(vertexData)
         isValid = true
     }
@@ -88,11 +100,12 @@ class MainScreenBackgroundVertexBuffer : GlVertexBuffer() {
 
     override val isWindowSizeDependent: Boolean = true
 
-    override fun generateVerticesForSize(resources: Resources, width: Int, height: Int): FloatBuffer {
+    override fun generateVerticesForSize(context: Context, width: Int, height: Int): FloatBuffer {
 
+        val displayMetrics = context.resources.displayMetrics
         val marginDips = 16.0f
-        val marginUnitsW: Float = 2.0f * (marginDips * resources.displayMetrics.density) / width.toFloat()
-        val marginUnitsH: Float = 2.0f * (marginDips * resources.displayMetrics.density) / height.toFloat()
+        val marginUnitsW: Float = 2.0f * (marginDips * displayMetrics.density) / width.toFloat()
+        val marginUnitsH: Float = 2.0f * (marginDips * displayMetrics.density) / height.toFloat()
 
         val w1 = -1.0f + marginUnitsW
         val w2 = w1 + marginUnitsW
@@ -140,6 +153,17 @@ class MainScreenBackgroundVertexBuffer : GlVertexBuffer() {
         data.putSquare(510, w2, h5, w9, h6, 0.5f, 0.5f, 1.0f, 0.0f)
         data.putSquare(540, w9, h5, w10, h6, 0.5f, 0.5f, 0.0f, 0.0f)
 
+        return data.toFloatBuffer()
+    }
+}
+
+class RandomTextVertexBuffer : GlVertexBuffer() {
+
+    override val isWindowSizeDependent: Boolean = true
+
+    override fun generateVerticesForSize(context: Context, width: Int, height: Int): FloatBuffer {
+        val font = getOrkneyFontDescription(context)
+        val data = font.generateTextVbo("Hello world!", -0.8f, 0.2f, 1.6f, 0.4f, 2f, 1.0f)
         return data.toFloatBuffer()
     }
 }
