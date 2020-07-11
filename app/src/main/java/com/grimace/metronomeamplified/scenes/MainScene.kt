@@ -109,7 +109,7 @@ class MainScene : GlScene {
 
         // Draw icon vertices
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, iconsTextureHandle)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 114, 24)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 114, 36)
 
         // Set font program
         GLES20.glUseProgram(fontProgramHandle)

@@ -156,8 +156,9 @@ class MainScreenBackgroundVertexBuffer : GlVertexBuffer() {
         val hIconBottom = 0.7f
         val hIconLabelBottom = 0.5f
         val hIconTop = 1.0f
+        val hLowerIconsLabelTop = h2 + 0.25f * (h3 - h2)
 
-        val data = FloatArray(30 * 23)
+        val data = FloatArray(30 * 25)
         data.putSquare(0, -1f, -1f, 1f, 1f, 0f, 0f, 1f, 1f)
 
         data.putSquare(30, w1, h1, w2, h2, 0.0f, 0.0f, 0.5f, 0.5f)
@@ -189,6 +190,8 @@ class MainScreenBackgroundVertexBuffer : GlVertexBuffer() {
         data.putSquareCentredInside(600, hIcon2Left, hIconBottom, hIcon3Left, hIconTop, 0.25f, 0.5f, 0.5f, 0.0f, screenSize)
         data.putSquareCentredInside(630, hIcon3Left, hIconBottom, hIcon4Left, hIconTop, 0.5f, 0.5f, 0.75f, 0.0f, screenSize)
         data.putSquareCentredInside(660, hIcon4Left, hIconBottom, hIcon4Right, hIconTop, 0.75f, 0.5f, 1.0f, 0.0f, screenSize)
+        data.putSquareCentredInside(690, w2, hLowerIconsLabelTop, w3, h3, 0.0f, 1.0f, 0.25f, 0.5f, screenSize)
+        data.putSquareCentredInside(720, w8, hLowerIconsLabelTop, w9, h3, 0.25f, 1.0f, 0.5f, 0.5f, screenSize)
 
         return data.toFloatBuffer()
     }
