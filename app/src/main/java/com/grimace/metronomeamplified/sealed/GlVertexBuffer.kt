@@ -197,13 +197,59 @@ class MainScreenBackgroundVertexBuffer : GlVertexBuffer() {
     }
 }
 
-class RandomTextVertexBuffer : GlVertexBuffer() {
+class IconLabelsVertexBuffer : GlVertexBuffer() {
 
     override val isWindowSizeDependent: Boolean = true
 
     override fun generateVerticesForSize(context: Context, width: Int, height: Int): FloatBuffer {
+
+        // Guidelines from MainScreenBackgroundVertexBuffer
+        val displayMetrics = context.resources.displayMetrics
+        val marginDips = 16.0f
+        val marginUnitsW: Float = 2.0f * (marginDips * displayMetrics.density) / width.toFloat()
+        val marginUnitsH: Float = 2.0f * (marginDips * displayMetrics.density) / height.toFloat()
+        val w2 = -1.0f + 2.0f * marginUnitsW
+        val w3 = -1.0f + (2.0f - 2.0f * marginUnitsW) / 3.0f - marginUnitsW
+        val w8 = 1.0f - (2.0f - 2.0f * marginUnitsW) / 3.0f + marginUnitsW
+        val w9 = 1.0f - 2.0f * marginUnitsW
+        val hIcon1Left = -1.0f
+        val hIcon2Left = -0.5f
+        val hIcon3Left = 0.0f
+        val hIcon4Left = 0.5f
+        val hIcon4Right = 1.0f
+        val hIconBottom = 0.7f
+        val hIconLabelBottom = 0.5f
+        val h2 = -1.0f + 2.0f * marginUnitsH
+        val h3 = -1.0f + (2.0f - marginUnitsH) / 4.0f - marginUnitsH
+        val hLowerIconsLabelTop = h2 + 0.25f * (h3 - h2)
+
         val font = getOrkneyFontDescription(context)
-        val data = font.generateTextVbo("Hello world!", -0.8f, 0.2f, 1.6f, 0.4f, 2f, 1.0f)
-        return data.toFloatBuffer()
+        val labels = arrayOf(
+            "TONE",
+            "SONG",
+            "HELP",
+            "SETTINGS",
+            "TIMER",
+            "LIFT"
+        )
+        var totalFloatCount = 0
+        labels.forEach { totalFloatCount += 30 * it.length }
+        val vboData = FloatArray(totalFloatCount)
+
+        var bufferIndex = 0
+        font.printIntoVbo(vboData, bufferIndex, labels[0], hIcon1Left, hIconBottom, hIcon2Left - hIcon1Left, hIconBottom - hIconLabelBottom, 2.0f, 1.0f)
+        bufferIndex += 30 * labels[0].length
+        font.printIntoVbo(vboData, bufferIndex, labels[1], hIcon2Left, hIconBottom, hIcon3Left - hIcon2Left, hIconBottom - hIconLabelBottom, 2.0f, 1.0f)
+        bufferIndex += 30 * labels[1].length
+        font.printIntoVbo(vboData, bufferIndex, labels[2], hIcon3Left, hIconBottom, hIcon4Left - hIcon3Left, hIconBottom - hIconLabelBottom, 2.0f, 1.0f)
+        bufferIndex += 30 * labels[2].length
+        font.printIntoVbo(vboData, bufferIndex, labels[3], hIcon4Left, hIconBottom, hIcon4Right - hIcon4Left, hIconBottom - hIconLabelBottom, 2.0f, 1.0f)
+        bufferIndex += 30 * labels[3].length
+        font.printIntoVbo(vboData, bufferIndex, labels[4], w2, hLowerIconsLabelTop, w3 - w2, hLowerIconsLabelTop - h2, 2.0f, 1.0f)
+        bufferIndex += 30 * labels[4].length
+        font.printIntoVbo(vboData, bufferIndex, labels[5], w8, hLowerIconsLabelTop, w9 - w8, hLowerIconsLabelTop - h2, 2.0f, 1.0f)
+        bufferIndex += 30 * labels[5].length
+
+        return vboData.toFloatBuffer()
     }
 }

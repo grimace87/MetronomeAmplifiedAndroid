@@ -16,7 +16,7 @@ class MainScene : GlScene {
         get() = listOf(WoodenTexture::class.java, WhiteTranslucentShapesTexture::class.java, OrkneyFontTexture::class.java, IconsTexture::class.java)
 
     override val requiredVertexBuffers: List<Class<out GlVertexBuffer>>
-        get() = listOf(MainScreenBackgroundVertexBuffer::class.java, RandomTextVertexBuffer::class.java)
+        get() = listOf(MainScreenBackgroundVertexBuffer::class.java, IconLabelsVertexBuffer::class.java)
 
     // Main shader program shader handles
     private var mainProgramHandle = 0
@@ -65,7 +65,7 @@ class MainScene : GlScene {
         // Pre-fetch handles for font shader and resources to be used with that shader
         fontProgramHandle = shaders[FontShader::class.java]?.programHandle ?: 0
         fontTextureHandle = textures[OrkneyFontTexture::class.java]?.textureHandle ?: 0
-        fontVertexBufferHandle = vertexBuffers[RandomTextVertexBuffer::class.java]?.vertexBufferHandle ?: 0
+        fontVertexBufferHandle = vertexBuffers[IconLabelsVertexBuffer::class.java]?.vertexBufferHandle ?: 0
 
         // Get attributes for the font shader and make sure they're enabled
         fontProgramVertexAttrib = GLES20.glGetAttribLocation(fontProgramHandle, "aPosition")
@@ -114,7 +114,7 @@ class MainScene : GlScene {
         // Set font program
         GLES20.glUseProgram(fontProgramHandle)
         GLES20.glUniform1i(fontProgramTextureSampler, 0)
-        GLES20.glUniform4f(fontProgramPaintColor, 0.94f, 0.89f, 0.68f, 1.0f)
+        GLES20.glUniform4f(fontProgramPaintColor, 0.96f, 0.87f, 0.70f, 1.0f)
 
         // Load vertex array
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, fontVertexBufferHandle)
@@ -127,7 +127,7 @@ class MainScene : GlScene {
 
         // Draw font vertices
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fontTextureHandle)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 72)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 174)
 
         // Unbind
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)

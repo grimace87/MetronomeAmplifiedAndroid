@@ -192,19 +192,24 @@ class Font private constructor(
         }
     }
 
-    fun generateTextVbo(
+    /**
+     * Generate VBO data to render supplied text, writing into the provided float array.
+     * Required space in the float array, starting at the startIndex offset, is 30 floats per
+     * character.
+     */
+    fun printIntoVbo(
+        vboData: FloatArray,
+        startIndex: Int,
         textToRender: String,
         left: Float,
         top: Float,
         boxWidth: Float,
         boxHeight: Float,
         lines: Float,
-        scale: Float): FloatArray {
+        scale: Float) {
 
-        // Assign buffer, with 6 vertices per character and 5 or 8 floats per vertex
-        val floatsPerVertex = 5
-        val floatCount: Int = textToRender.length * floatsPerVertex * 6
-        val floats = FloatArray(floatCount)
+        // Will use 6 vertices per character and 5 floats per vertex
+        val floatsPerCharacter = 30
 
         // Find scaling factor
         val lineHeightUnits: Float = boxHeight / lines
@@ -236,7 +241,7 @@ class Font private constructor(
                 xMax, yMax, 0.0f, sMax, tMin,
                 xMin, yMax, 0.0f, sMin, tMin
             )
-            quadData.copyInto(floats, charsRendered * 6 * floatsPerVertex)
+            quadData.copyInto(vboData, startIndex + charsRendered * floatsPerCharacter)
 
             penX += glyph.advanceX * unitsPerPixel
             if ((penX + this.lineHeight * unitsPerPixel) > boxWidth) {
@@ -245,7 +250,5 @@ class Font private constructor(
             }
             charsRendered++
         }
-
-        return floats
     }
 }
