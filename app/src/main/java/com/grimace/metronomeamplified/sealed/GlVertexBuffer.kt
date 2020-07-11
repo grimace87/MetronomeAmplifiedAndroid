@@ -1,11 +1,13 @@
 package com.grimace.metronomeamplified.sealed
 
 import android.content.Context
+import android.graphics.PointF
 import android.opengl.GLES20
 import com.grimace.metronomeamplified.utils.Font
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
+import kotlin.math.abs
 
 const val FLOAT_SIZE_BYTES = 4
 
@@ -94,6 +96,25 @@ sealed class GlVertexBuffer {
         )
         squareFloats.copyInto(this, index)
     }
+
+    protected fun FloatArray.putSquareCentredInside(index: Int, x1: Float, y1: Float, x2: Float, y2: Float, s1: Float, t1: Float, s2: Float, t2: Float, screenSize: PointF) {
+        // Get units to pixels scaling factor, and use those to determine dimensions of requested rect in pixels
+        val pixelsPerUnitWidth = screenSize.x / 2.0f
+        val pixelsPerUnitHeight = screenSize.y / 2.0f
+        val rectWidthPixels = abs(x2 - x1) * pixelsPerUnitWidth
+        val rectHeightPixels = abs(y2 - y1) * pixelsPerUnitHeight
+
+        // Figure out where the square lies in this rect (squareness is defined within pixel coordinates)
+        if (rectWidthPixels > rectHeightPixels) {
+            val direction = if (x1 > x2) -1.0f else 1.0f
+            val widthMargin = direction * 0.5f * (rectWidthPixels - rectHeightPixels) / pixelsPerUnitWidth
+            putSquare(index, x1 + widthMargin, y1, x2 - widthMargin, y2, s1, t1, s2, t2)
+        } else {
+            val direction = if (y1 > y2) -1.0f else 1.0f
+            val heightMargin = direction * 0.5f * (rectHeightPixels - rectWidthPixels) / pixelsPerUnitHeight
+            putSquare(index, x1, y1 + heightMargin, x2, y2 - heightMargin, s1, t1, s2, t2)
+        }
+    }
 }
 
 class MainScreenBackgroundVertexBuffer : GlVertexBuffer() {
@@ -106,6 +127,7 @@ class MainScreenBackgroundVertexBuffer : GlVertexBuffer() {
         val marginDips = 16.0f
         val marginUnitsW: Float = 2.0f * (marginDips * displayMetrics.density) / width.toFloat()
         val marginUnitsH: Float = 2.0f * (marginDips * displayMetrics.density) / height.toFloat()
+        val screenSize = PointF(displayMetrics.widthPixels.toFloat(), displayMetrics.heightPixels.toFloat())
 
         val w1 = -1.0f + marginUnitsW
         val w2 = w1 + marginUnitsW
@@ -125,7 +147,17 @@ class MainScreenBackgroundVertexBuffer : GlVertexBuffer() {
         val h6 = 0.0f - marginUnitsH
         val h5 = h6 - marginUnitsH
 
-        val data = FloatArray(30 * 19)
+        val hIcon1Left = -1.0f
+        val hIcon2Left = -0.5f
+        val hIcon3Left = 0.0f
+        val hIcon4Left = 0.5f
+        val hIcon4Right = 1.0f
+
+        val hIconBottom = 0.7f
+        val hIconLabelBottom = 0.5f
+        val hIconTop = 1.0f
+
+        val data = FloatArray(30 * 23)
         data.putSquare(0, -1f, -1f, 1f, 1f, 0f, 0f, 1f, 1f)
 
         data.putSquare(30, w1, h1, w2, h2, 0.0f, 0.0f, 0.5f, 0.5f)
@@ -152,6 +184,11 @@ class MainScreenBackgroundVertexBuffer : GlVertexBuffer() {
         data.putSquare(480, w1, h5, w2, h6, 0.0f, 0.5f, 0.5f, 0.0f)
         data.putSquare(510, w2, h5, w9, h6, 0.5f, 0.5f, 1.0f, 0.0f)
         data.putSquare(540, w9, h5, w10, h6, 0.5f, 0.5f, 0.0f, 0.0f)
+
+        data.putSquareCentredInside(570, hIcon1Left, hIconBottom, hIcon2Left, hIconTop, 0.0f, 0.5f, 0.25f, 0.0f, screenSize)
+        data.putSquareCentredInside(600, hIcon2Left, hIconBottom, hIcon3Left, hIconTop, 0.25f, 0.5f, 0.5f, 0.0f, screenSize)
+        data.putSquareCentredInside(630, hIcon3Left, hIconBottom, hIcon4Left, hIconTop, 0.5f, 0.5f, 0.75f, 0.0f, screenSize)
+        data.putSquareCentredInside(660, hIcon4Left, hIconBottom, hIcon4Right, hIconTop, 0.75f, 0.5f, 1.0f, 0.0f, screenSize)
 
         return data.toFloatBuffer()
     }

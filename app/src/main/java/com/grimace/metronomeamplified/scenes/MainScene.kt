@@ -13,7 +13,7 @@ class MainScene : GlScene {
         get() = listOf(AlphaTexture::class.java, FontShader::class.java)
 
     override val requiredTextures: List<Class<out GlTexture>>
-        get() = listOf(WoodenTexture::class.java, WhiteTranslucentShapesTexture::class.java, OrkneyFontTexture::class.java)
+        get() = listOf(WoodenTexture::class.java, WhiteTranslucentShapesTexture::class.java, OrkneyFontTexture::class.java, IconsTexture::class.java)
 
     override val requiredVertexBuffers: List<Class<out GlVertexBuffer>>
         get() = listOf(MainScreenBackgroundVertexBuffer::class.java, RandomTextVertexBuffer::class.java)
@@ -27,6 +27,7 @@ class MainScene : GlScene {
     // Resources used with main shader
     private var backgroundTextureHandle = 0
     private var overlayTextureHandle = 0
+    private var iconsTextureHandle = 0
     private var backgroundVertexBufferHandle = 0
 
     // Font shader program handles
@@ -49,6 +50,7 @@ class MainScene : GlScene {
         mainProgramHandle = shaders[AlphaTexture::class.java]?.programHandle ?: 0
         backgroundTextureHandle = textures[WoodenTexture::class.java]?.textureHandle ?: 0
         overlayTextureHandle = textures[WhiteTranslucentShapesTexture::class.java]?.textureHandle ?: 0
+        iconsTextureHandle = textures[IconsTexture::class.java]?.textureHandle ?: 0
         backgroundVertexBufferHandle = vertexBuffers[MainScreenBackgroundVertexBuffer::class.java]?.vertexBufferHandle ?: 0
 
         // Get attributes for the main shader and make sure they're enabled
@@ -104,6 +106,10 @@ class MainScene : GlScene {
         // Draw overlay vertices
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, overlayTextureHandle)
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 6, 108)
+
+        // Draw icon vertices
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, iconsTextureHandle)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 114, 24)
 
         // Set font program
         GLES20.glUseProgram(fontProgramHandle)

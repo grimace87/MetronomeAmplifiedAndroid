@@ -4,7 +4,9 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.opengl.GLES20
 import android.opengl.GLUtils
+import com.grimace.metronomeamplified.R
 import com.grimace.metronomeamplified.extensions.openAsBitmap
+import com.grimace.metronomeamplified.extensions.openDrawableBitmap
 import java.io.IOException
 import java.nio.ByteBuffer
 import kotlin.math.max
@@ -128,5 +130,14 @@ class WhiteTranslucentShapesTexture : GlTexture() {
         val bitmap = Bitmap.createBitmap(cornerRadiusPixels * 2, cornerRadiusPixels * 2, Bitmap.Config.ARGB_8888)
         bitmap.copyPixelsFromBuffer(buffer)
         return bitmap
+    }
+}
+
+/**
+ * Opens from file
+ */
+class IconsTexture : GlTexture() {
+    override fun getBitmap(context: Context): Bitmap {
+        return context.openDrawableBitmap(R.drawable.icons)
     }
 }
