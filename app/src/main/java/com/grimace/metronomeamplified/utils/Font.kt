@@ -1,11 +1,13 @@
 package com.grimace.metronomeamplified.utils
 
 import android.content.Context
+import android.graphics.PointF
 import com.grimace.metronomeamplified.extensions.openAsString
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.StringReader
 import java.security.InvalidParameterException
+import kotlin.math.min
 
 private const val FONT_TEXTURE_GLYPH_COUNT = 128
 private const val FONT_TEXTURE_SIZE = 512.0f
@@ -197,7 +199,7 @@ class Font private constructor(
      * Required space in the float array, starting at the startIndex offset, is 30 floats per
      * character.
      */
-    fun printIntoVbo(
+    fun printTextIntoVboCentredInside(
         vboData: FloatArray,
         startIndex: Int,
         textToRender: String,
@@ -205,28 +207,43 @@ class Font private constructor(
         top: Float,
         boxWidth: Float,
         boxHeight: Float,
-        lines: Float,
-        scale: Float) {
+        maxHeightPixels: Float,
+        screenSize: PointF) {
 
         // Will use 6 vertices per character and 5 floats per vertex
         val floatsPerCharacter = 30
 
-        // Find scaling factor
-        val lineHeightUnits: Float = boxHeight / lines
-        val unitsPerPixel: Float = scale * lineHeightUnits / this.lineHeight
+        // Find scaling factors
+        val pixelsPerUnitWidth = screenSize.x / 2.0f
+        val pixelsPerUnitHeight = screenSize.y / 2.0f
+
+        // Convert target area to pixel sizes and coordinates
+        val targetWidthPixels = pixelsPerUnitWidth * boxWidth
+        val targetHeightPixels = pixelsPerUnitHeight * boxHeight
+        val renderHeightPixels = min(targetHeightPixels, maxHeightPixels)
+        val screenPixelsPerFontPixel = renderHeightPixels / this.lineHeight
+        var renderWidthPixels = 0.0f
+        for (c: Char in textToRender) {
+            val glyph = this.glyphs[c.toInt()] ?: continue
+            renderWidthPixels += glyph.advanceX * screenPixelsPerFontPixel
+        }
+        val marginXPixels = 0.5f * (targetWidthPixels - renderWidthPixels)
+        val marginYPixels = 0.5f * (targetHeightPixels - renderHeightPixels)
 
         // Start building the buffer
         var charsRendered = 0
-        var penX: Float = left
-        var penY: Float = top - this.baseHeight * unitsPerPixel
+        val widthUnitsPerFontPixel = screenPixelsPerFontPixel / pixelsPerUnitWidth
+        val heightUnitsPerFontPixel = screenPixelsPerFontPixel / pixelsPerUnitHeight
+        var penX: Float = left + marginXPixels / pixelsPerUnitWidth
+        val penY: Float = top - boxHeight + marginYPixels / pixelsPerUnitHeight
         for (c: Char in textToRender) {
 
             val glyph = this.glyphs[c.toInt()] ?: continue
 
-            val xMin = penX + glyph.offsetX * unitsPerPixel
-            val xMax = xMin + glyph.width * unitsPerPixel
-            val yMax = penY + (this.baseHeight - glyph.offsetY) * unitsPerPixel
-            val yMin = yMax - glyph.height * unitsPerPixel
+            val xMin = penX + glyph.offsetX * widthUnitsPerFontPixel
+            val xMax = xMin + glyph.width * widthUnitsPerFontPixel
+            val yMax = penY + (this.baseHeight - glyph.offsetY) * heightUnitsPerFontPixel
+            val yMin = yMax - glyph.height * heightUnitsPerFontPixel
 
             val sMin = glyph.textureS / FONT_TEXTURE_SIZE
             val sMax = sMin + glyph.width / FONT_TEXTURE_SIZE
@@ -242,12 +259,7 @@ class Font private constructor(
                 xMin, yMax, 0.0f, sMin, tMin
             )
             quadData.copyInto(vboData, startIndex + charsRendered * floatsPerCharacter)
-
-            penX += glyph.advanceX * unitsPerPixel
-            if ((penX + this.lineHeight * unitsPerPixel) > boxWidth) {
-                penX = left
-                penY -= this.lineHeight * unitsPerPixel
-            }
+            penX += glyph.advanceX * widthUnitsPerFontPixel
             charsRendered++
         }
     }
