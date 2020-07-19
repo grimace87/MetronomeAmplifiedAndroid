@@ -8,6 +8,7 @@ import com.grimace.metronomeamplified.caches.ShaderCache
 import com.grimace.metronomeamplified.caches.TextureCache
 import com.grimace.metronomeamplified.caches.VertexBufferCache
 import com.grimace.metronomeamplified.scenes.MainScene
+import com.grimace.metronomeamplified.scenes.SettingsHubScene
 import com.grimace.metronomeamplified.traits.GlScene
 import java.lang.RuntimeException
 import java.lang.ref.WeakReference
@@ -89,5 +90,15 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer {
 
         val currentScene = sceneStack.peek()
         currentScene.drawScene()
+    }
+
+    fun stackSize(): Int {
+        return sceneStack.size
+    }
+
+    fun onPointerDown() {
+        if (sceneStack.size == 1) {
+            pushNewScene(SettingsHubScene())
+        }
     }
 }

@@ -21,9 +21,18 @@ class MainSurfaceView(activity: Activity) : GLSurfaceView(activity) {
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                renderer.popScene()
+                queueEvent { renderer.onPointerDown() }
             }
         }
         return super.onTouchEvent(event)
+    }
+
+    fun tryHandleDeviceBack(): Boolean {
+        val stackSize = renderer.stackSize()
+        val willEnd = stackSize < 2
+        if (!willEnd) {
+            queueEvent { renderer.popScene() }
+        }
+        return !willEnd
     }
 }

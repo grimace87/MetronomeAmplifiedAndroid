@@ -13,4 +13,10 @@ class MainActivity : AppCompatActivity() {
         surfaceView = MainSurfaceView(this)
         setContentView(surfaceView)
     }
+
+    override fun onBackPressed() {
+        if (!surfaceView.tryHandleDeviceBack()) {
+            super.onBackPressed()
+        }
+    }
 }
