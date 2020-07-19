@@ -2,6 +2,7 @@ package com.grimace.metronomeamplified.utils
 
 import android.content.Context
 import android.graphics.PointF
+import android.view.Gravity
 import com.grimace.metronomeamplified.extensions.openAsString
 import java.io.BufferedReader
 import java.io.IOException
@@ -208,7 +209,8 @@ class Font private constructor(
         boxWidth: Float,
         boxHeight: Float,
         maxHeightPixels: Float,
-        screenSize: PointF) {
+        screenSize: PointF,
+        horizontalGravity: Int) {
 
         // Will use 6 vertices per character and 5 floats per vertex
         val floatsPerCharacter = 30
@@ -227,8 +229,14 @@ class Font private constructor(
             val glyph = this.glyphs[c.toInt()] ?: continue
             renderWidthPixels += glyph.advanceX * screenPixelsPerFontPixel
         }
-        val marginXPixels = 0.5f * (targetWidthPixels - renderWidthPixels)
+
+        // Set side margin, horizontal margin depends on supplied gravity
         val marginYPixels = 0.5f * (targetHeightPixels - renderHeightPixels)
+        val marginXPixels: Float = when {
+            horizontalGravity and Gravity.START != 0 -> 0.0f
+            horizontalGravity and Gravity.END != 0 -> targetWidthPixels - renderWidthPixels
+            else -> 0.5f * (targetWidthPixels - renderWidthPixels)
+        }
 
         // Start building the buffer
         var charsRendered = 0
