@@ -3,6 +3,7 @@ package com.grimace.metronomeamplified.utils
 import android.content.Context
 import android.graphics.PointF
 import android.view.Gravity
+import com.grimace.metronomeamplified.components.FLOATS_PER_QUAD
 import com.grimace.metronomeamplified.extensions.openAsString
 import java.io.BufferedReader
 import java.io.IOException
@@ -212,9 +213,6 @@ class Font private constructor(
         screenSize: PointF,
         horizontalGravity: Int) {
 
-        // Will use 6 vertices per character and 5 floats per vertex
-        val floatsPerCharacter = 30
-
         // Find scaling factors
         val pixelsPerUnitWidth = screenSize.x / 2.0f
         val pixelsPerUnitHeight = screenSize.y / 2.0f
@@ -266,7 +264,7 @@ class Font private constructor(
                 xMax, yMax, 0.0f, sMax, tMin,
                 xMin, yMax, 0.0f, sMin, tMin
             )
-            quadData.copyInto(vboData, startIndex + charsRendered * floatsPerCharacter)
+            quadData.copyInto(vboData, startIndex + charsRendered * FLOATS_PER_QUAD)
             penX += glyph.advanceX * widthUnitsPerFontPixel
             charsRendered++
         }

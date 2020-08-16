@@ -11,6 +11,7 @@ import java.nio.FloatBuffer
 import kotlin.math.abs
 
 const val FLOAT_SIZE_BYTES = 4
+const val FLOATS_PER_QUAD = 30
 
 abstract class GlVertexBuffer {
 

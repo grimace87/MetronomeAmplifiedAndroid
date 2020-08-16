@@ -13,6 +13,8 @@ import com.grimace.metronomeamplified.components.textures.WhiteTranslucentShapes
 import com.grimace.metronomeamplified.components.textures.WoodenBackgroundTexture
 import com.grimace.metronomeamplified.components.vertexbuffers.MainScreenBackgroundVertexBuffer
 import com.grimace.metronomeamplified.components.vertexbuffers.MainScreenIconLabelsVertexBuffer
+import com.grimace.metronomeamplified.components.vertexbuffers.MainScreenIconsVertexBuffer
+import com.grimace.metronomeamplified.components.vertexbuffers.MainScreenTranslucentOverlayVertexBuffer
 import com.grimace.metronomeamplified.traits.GlScene
 
 class MainScene : GlScene {
@@ -24,7 +26,7 @@ class MainScene : GlScene {
         get() = listOf(WoodenBackgroundTexture::class.java, WhiteTranslucentShapesTexture::class.java, OrkneyTexture::class.java, IconsTexture::class.java)
 
     override val requiredVertexBuffers: List<Class<out GlVertexBuffer>>
-        get() = listOf(MainScreenBackgroundVertexBuffer::class.java, MainScreenIconLabelsVertexBuffer::class.java)
+        get() = listOf(MainScreenBackgroundVertexBuffer::class.java, MainScreenTranslucentOverlayVertexBuffer::class.java, MainScreenIconsVertexBuffer::class.java, MainScreenIconLabelsVertexBuffer::class.java)
 
     // Main shader program shader handles
     private var mainProgramHandle = 0
@@ -37,6 +39,8 @@ class MainScene : GlScene {
     private var overlayTextureHandle = 0
     private var iconsTextureHandle = 0
     private var backgroundVertexBufferHandle = 0
+    private var overlayVertexBufferHandle = 0
+    private var iconsVertexBufferHandle = 0
 
     // Font shader program handles
     private var fontProgramHandle = 0
@@ -60,6 +64,8 @@ class MainScene : GlScene {
         overlayTextureHandle = textures[WhiteTranslucentShapesTexture::class.java]?.textureHandle ?: 0
         iconsTextureHandle = textures[IconsTexture::class.java]?.textureHandle ?: 0
         backgroundVertexBufferHandle = vertexBuffers[MainScreenBackgroundVertexBuffer::class.java]?.vertexBufferHandle ?: 0
+        overlayVertexBufferHandle = vertexBuffers[MainScreenTranslucentOverlayVertexBuffer::class.java]?.vertexBufferHandle ?: 0
+        iconsVertexBufferHandle = vertexBuffers[MainScreenIconsVertexBuffer::class.java]?.vertexBufferHandle ?: 0
 
         // Get attributes for the main shader and make sure they're enabled
         mainProgramVertexAttrib = GLES20.glGetAttribLocation(mainProgramHandle, "aPosition")
@@ -111,13 +117,31 @@ class MainScene : GlScene {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backgroundTextureHandle)
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6)
 
+        // Load vertex array
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, overlayVertexBufferHandle)
+        GLES20.glVertexAttribPointer(mainProgramVertexAttrib,
+            3, GLES20.GL_FLOAT, false,
+            5 * FLOAT_SIZE_BYTES, 0)
+        GLES20.glVertexAttribPointer(mainProgramTextureCoordAttrib,
+            2, GLES20.GL_FLOAT, false,
+            5 * FLOAT_SIZE_BYTES, 3 * FLOAT_SIZE_BYTES)
+
         // Draw overlay vertices
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, overlayTextureHandle)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 6, 108)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 108)
+
+        // Load vertex array
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, iconsVertexBufferHandle)
+        GLES20.glVertexAttribPointer(mainProgramVertexAttrib,
+            3, GLES20.GL_FLOAT, false,
+            5 * FLOAT_SIZE_BYTES, 0)
+        GLES20.glVertexAttribPointer(mainProgramTextureCoordAttrib,
+            2, GLES20.GL_FLOAT, false,
+            5 * FLOAT_SIZE_BYTES, 3 * FLOAT_SIZE_BYTES)
 
         // Draw icon vertices
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, iconsTextureHandle)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 114, 36)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 36)
 
         // Set font program
         GLES20.glUseProgram(fontProgramHandle)
