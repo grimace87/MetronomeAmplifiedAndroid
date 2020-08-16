@@ -9,6 +9,7 @@ import com.grimace.metronomeamplified.caches.TextureCache
 import com.grimace.metronomeamplified.caches.VertexBufferCache
 import com.grimace.metronomeamplified.scenes.MainScene
 import com.grimace.metronomeamplified.scenes.SettingsHubScene
+import com.grimace.metronomeamplified.scenes.SettingsNavigatingScene
 import com.grimace.metronomeamplified.traits.GlScene
 import java.lang.RuntimeException
 import java.lang.ref.WeakReference
@@ -99,6 +100,8 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer {
     fun onPointerDown() {
         if (sceneStack.size == 1) {
             pushNewScene(SettingsHubScene())
+        } else if (sceneStack.size == 2) {
+            pushNewScene(SettingsNavigatingScene())
         }
     }
 }
