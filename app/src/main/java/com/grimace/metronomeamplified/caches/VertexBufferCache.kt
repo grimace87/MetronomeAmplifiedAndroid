@@ -1,7 +1,7 @@
 package com.grimace.metronomeamplified.caches
 
 import android.content.Context
-import com.grimace.metronomeamplified.sealed.GlVertexBuffer
+import com.grimace.metronomeamplified.components.GlVertexBuffer
 
 class VertexBufferCache {
 

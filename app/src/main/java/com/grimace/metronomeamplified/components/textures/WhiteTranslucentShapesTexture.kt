@@ -1,75 +1,12 @@
-package com.grimace.metronomeamplified.sealed
+package com.grimace.metronomeamplified.components.textures
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.opengl.GLES20
-import android.opengl.GLUtils
-import com.grimace.metronomeamplified.R
-import com.grimace.metronomeamplified.extensions.openAsBitmap
-import com.grimace.metronomeamplified.extensions.openDrawableBitmap
-import java.io.IOException
+import com.grimace.metronomeamplified.components.GlTexture
 import java.nio.ByteBuffer
 import kotlin.math.max
 import kotlin.math.sqrt
 
-sealed class GlTexture {
-
-    var textureHandle: Int = 0
-        private set
-
-    abstract fun getBitmap(context: Context): Bitmap
-
-    fun loadTextureReturningError(context: Context): String? {
-
-        // Read texture asset into Bitmap
-        val textureBitmap: Bitmap = try {
-            getBitmap(context)
-        } catch (e: IOException) {
-            return e.message
-        }
-
-        // Load bitmap into a texture object
-        textureHandle = loadTextureBitmap(textureBitmap)
-
-        // Return null indicating success (no error)
-        return null
-    }
-
-    private fun loadTextureBitmap(bitmap: Bitmap): Int {
-        val textures = intArrayOf(0)
-        GLES20.glGenTextures(1, textures, 0)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0])
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST)
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST)
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0)
-        return textures[0]
-    }
-}
-
-/**
- * Font texture - opens from file
- */
-class OrkneyFontTexture : GlTexture() {
-    override fun getBitmap(context: Context): Bitmap {
-        return context.assets.openAsBitmap("Orkney.png")
-    }
-}
-
-/**
- * Opens from file
- */
-class WoodenTexture : GlTexture() {
-    override fun getBitmap(context: Context): Bitmap {
-        return context.assets.openAsBitmap("wood_bg_texture.jpg")
-    }
-}
-
-/**
- * Generates bitmap dependent on device density. Contains four quadrants structured like:
- * | Outer radius | Solid |
- * | Inner radius | Clear |
- */
 class WhiteTranslucentShapesTexture : GlTexture() {
     override fun getBitmap(context: Context): Bitmap {
 
@@ -130,14 +67,5 @@ class WhiteTranslucentShapesTexture : GlTexture() {
         val bitmap = Bitmap.createBitmap(cornerRadiusPixels * 2, cornerRadiusPixels * 2, Bitmap.Config.ARGB_8888)
         bitmap.copyPixelsFromBuffer(buffer)
         return bitmap
-    }
-}
-
-/**
- * Opens from file
- */
-class IconsTexture : GlTexture() {
-    override fun getBitmap(context: Context): Bitmap {
-        return context.openDrawableBitmap(R.drawable.icons)
     }
 }

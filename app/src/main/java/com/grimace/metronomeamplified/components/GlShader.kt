@@ -1,11 +1,11 @@
-package com.grimace.metronomeamplified.sealed
+package com.grimace.metronomeamplified.components
 
 import android.content.Context
 import android.opengl.GLES20
 import com.grimace.metronomeamplified.extensions.openAsString
 import java.io.IOException
 
-sealed class GlShader(
+abstract class GlShader(
     private val vertexShaderAssetName: String,
     private val fragmentShaderAssetName: String) {
 
@@ -14,8 +14,6 @@ sealed class GlShader(
 
     private var vertexShaderHandle: Int = 0
     private var fragmentShaderHandle: Int = 0
-
-    protected abstract fun initialiseSubclass()
 
     fun compileReturningError(context: Context): String? {
 
@@ -68,17 +66,5 @@ sealed class GlShader(
             throw IllegalArgumentException(log)
         }
         return program
-    }
-}
-
-class AlphaTexture : GlShader("alpha_texture.vert", "alpha_texture.frag") {
-    override fun initialiseSubclass() {
-
-    }
-}
-
-class FontShader : GlShader("font_shader.vert", "font_shader.frag") {
-    override fun initialiseSubclass() {
-
     }
 }

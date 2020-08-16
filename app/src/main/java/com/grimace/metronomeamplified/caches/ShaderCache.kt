@@ -1,7 +1,7 @@
 package com.grimace.metronomeamplified.caches
 
 import android.content.Context
-import com.grimace.metronomeamplified.sealed.GlShader
+import com.grimace.metronomeamplified.components.GlShader
 import java.lang.RuntimeException
 
 class ShaderCache {

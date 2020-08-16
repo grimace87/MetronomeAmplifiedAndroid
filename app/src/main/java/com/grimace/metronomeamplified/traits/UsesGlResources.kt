@@ -1,8 +1,8 @@
 package com.grimace.metronomeamplified.traits
 
-import com.grimace.metronomeamplified.sealed.GlShader
-import com.grimace.metronomeamplified.sealed.GlTexture
-import com.grimace.metronomeamplified.sealed.GlVertexBuffer
+import com.grimace.metronomeamplified.components.GlShader
+import com.grimace.metronomeamplified.components.GlTexture
+import com.grimace.metronomeamplified.components.GlVertexBuffer
 
 interface UsesGlResources {
     val requiredShaders: List<Class<out GlShader>>

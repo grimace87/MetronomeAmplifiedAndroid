@@ -4,19 +4,27 @@ import android.opengl.GLES20
 import com.grimace.metronomeamplified.caches.ShaderCache
 import com.grimace.metronomeamplified.caches.TextureCache
 import com.grimace.metronomeamplified.caches.VertexBufferCache
-import com.grimace.metronomeamplified.sealed.*
+import com.grimace.metronomeamplified.components.*
+import com.grimace.metronomeamplified.components.shaders.AlphaTextureShader
+import com.grimace.metronomeamplified.components.shaders.FontShader
+import com.grimace.metronomeamplified.components.textures.IconsTexture
+import com.grimace.metronomeamplified.components.textures.OrkneyTexture
+import com.grimace.metronomeamplified.components.textures.WhiteTranslucentShapesTexture
+import com.grimace.metronomeamplified.components.textures.WoodenBackgroundTexture
+import com.grimace.metronomeamplified.components.vertexbuffers.MainScreenBackgroundVertexBuffer
+import com.grimace.metronomeamplified.components.vertexbuffers.MainScreenIconLabelsVertexBuffer
 import com.grimace.metronomeamplified.traits.GlScene
 
 class MainScene : GlScene {
 
     override val requiredShaders: List<Class<out GlShader>>
-        get() = listOf(AlphaTexture::class.java, FontShader::class.java)
+        get() = listOf(AlphaTextureShader::class.java, FontShader::class.java)
 
     override val requiredTextures: List<Class<out GlTexture>>
-        get() = listOf(WoodenTexture::class.java, WhiteTranslucentShapesTexture::class.java, OrkneyFontTexture::class.java, IconsTexture::class.java)
+        get() = listOf(WoodenBackgroundTexture::class.java, WhiteTranslucentShapesTexture::class.java, OrkneyTexture::class.java, IconsTexture::class.java)
 
     override val requiredVertexBuffers: List<Class<out GlVertexBuffer>>
-        get() = listOf(MainScreenBackgroundVertexBuffer::class.java, IconLabelsVertexBuffer::class.java)
+        get() = listOf(MainScreenBackgroundVertexBuffer::class.java, MainScreenIconLabelsVertexBuffer::class.java)
 
     // Main shader program shader handles
     private var mainProgramHandle = 0
@@ -47,8 +55,8 @@ class MainScene : GlScene {
         vertexBuffers: VertexBufferCache
     ) {
         // Pre-fetch handles for main shader and resources to be used with that shader
-        mainProgramHandle = shaders[AlphaTexture::class.java]?.programHandle ?: 0
-        backgroundTextureHandle = textures[WoodenTexture::class.java]?.textureHandle ?: 0
+        mainProgramHandle = shaders[AlphaTextureShader::class.java]?.programHandle ?: 0
+        backgroundTextureHandle = textures[WoodenBackgroundTexture::class.java]?.textureHandle ?: 0
         overlayTextureHandle = textures[WhiteTranslucentShapesTexture::class.java]?.textureHandle ?: 0
         iconsTextureHandle = textures[IconsTexture::class.java]?.textureHandle ?: 0
         backgroundVertexBufferHandle = vertexBuffers[MainScreenBackgroundVertexBuffer::class.java]?.vertexBufferHandle ?: 0
@@ -64,8 +72,8 @@ class MainScene : GlScene {
 
         // Pre-fetch handles for font shader and resources to be used with that shader
         fontProgramHandle = shaders[FontShader::class.java]?.programHandle ?: 0
-        fontTextureHandle = textures[OrkneyFontTexture::class.java]?.textureHandle ?: 0
-        fontVertexBufferHandle = vertexBuffers[IconLabelsVertexBuffer::class.java]?.vertexBufferHandle ?: 0
+        fontTextureHandle = textures[OrkneyTexture::class.java]?.textureHandle ?: 0
+        fontVertexBufferHandle = vertexBuffers[MainScreenIconLabelsVertexBuffer::class.java]?.vertexBufferHandle ?: 0
 
         // Get attributes for the font shader and make sure they're enabled
         fontProgramVertexAttrib = GLES20.glGetAttribLocation(fontProgramHandle, "aPosition")

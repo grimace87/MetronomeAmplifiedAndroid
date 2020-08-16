@@ -1,7 +1,7 @@
 package com.grimace.metronomeamplified.caches
 
 import android.content.Context
-import com.grimace.metronomeamplified.sealed.GlTexture
+import com.grimace.metronomeamplified.components.GlTexture
 import java.lang.RuntimeException
 
 class TextureCache {
