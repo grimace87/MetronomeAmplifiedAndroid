@@ -40,9 +40,9 @@ class HelpNavigatingTextsVertexBuffer : GlVertexBuffer() {
         var bufferIndex = 0
         val headingTextHeight = 2.0f * marginDips * displayMetrics.density
         val bodyTextHeight = 1.5f * marginDips * displayMetrics.density
-        font.printTextIntoVboCentredInside(vboData, bufferIndex, labels[0], w1, h4, w4 - w1, h4 - h3, headingTextHeight, screenSize, Gravity.START)
+        font.printTextIntoVbo(vboData, bufferIndex, labels[0], w1, h4, w4 - w1, h4 - h3, headingTextHeight, screenSize, Gravity.START, Gravity.CENTER_VERTICAL)
         bufferIndex += FLOATS_PER_QUAD * labels[0].length
-        font.printTextIntoVboCentredInside(vboData, bufferIndex, labels[1], w2, h2, w3 - w2, h2 - h1, bodyTextHeight, screenSize, Gravity.START)
+        font.printTextIntoVbo(vboData, bufferIndex, labels[1], w2, h2, w3 - w2, h2 - h1, bodyTextHeight, screenSize, Gravity.START, Gravity.START)
         bufferIndex += FLOATS_PER_QUAD * labels[1].length
 
         return vboData.toFloatBuffer()

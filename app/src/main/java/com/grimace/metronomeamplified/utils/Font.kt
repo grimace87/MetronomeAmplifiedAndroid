@@ -201,7 +201,7 @@ class Font private constructor(
      * Required space in the float array, starting at the startIndex offset, is 30 floats per
      * character.
      */
-    fun printTextIntoVboCentredInside(
+    fun printTextIntoVbo(
         vboData: FloatArray,
         startIndex: Int,
         textToRender: String,
@@ -211,7 +211,8 @@ class Font private constructor(
         boxHeight: Float,
         maxHeightPixels: Float,
         screenSize: PointF,
-        horizontalGravity: Int) {
+        horizontalGravity: Int,
+        verticalGravity: Int) {
 
         // Find scaling factors
         val pixelsPerUnitWidth = screenSize.x / 2.0f
@@ -229,7 +230,11 @@ class Font private constructor(
         }
 
         // Set side margin, horizontal margin depends on supplied gravity
-        val marginYPixels = 0.5f * (targetHeightPixels - renderHeightPixels)
+        val marginYPixels: Float = when (verticalGravity) {
+            Gravity.START -> targetHeightPixels - renderHeightPixels
+            Gravity.END -> 0.0f
+            else -> 0.5f * (targetHeightPixels - renderHeightPixels)
+        }
         val marginXPixels: Float = when (horizontalGravity) {
             Gravity.START -> 0.0f
             Gravity.END -> targetWidthPixels - renderWidthPixels

@@ -49,17 +49,17 @@ class MainScreenIconLabelsVertexBuffer : GlVertexBuffer() {
 
         var bufferIndex = 0
         val maxTextHeightPixels = 24.0f * displayMetrics.density
-        font.printTextIntoVboCentredInside(vboData, bufferIndex, labels[0], hIcon1Left, hIconBottom, hIcon2Left - hIcon1Left, hIconBottom - hIconLabelBottom, maxTextHeightPixels, screenSize, Gravity.CENTER)
+        font.printTextIntoVbo(vboData, bufferIndex, labels[0], hIcon1Left, hIconBottom, hIcon2Left - hIcon1Left, hIconBottom - hIconLabelBottom, maxTextHeightPixels, screenSize, Gravity.CENTER_HORIZONTAL, Gravity.CENTER_VERTICAL)
         bufferIndex += FLOATS_PER_QUAD * labels[0].length
-        font.printTextIntoVboCentredInside(vboData, bufferIndex, labels[1], hIcon2Left, hIconBottom, hIcon3Left - hIcon2Left, hIconBottom - hIconLabelBottom, maxTextHeightPixels, screenSize, Gravity.CENTER)
+        font.printTextIntoVbo(vboData, bufferIndex, labels[1], hIcon2Left, hIconBottom, hIcon3Left - hIcon2Left, hIconBottom - hIconLabelBottom, maxTextHeightPixels, screenSize, Gravity.CENTER_HORIZONTAL, Gravity.CENTER_VERTICAL)
         bufferIndex += FLOATS_PER_QUAD * labels[1].length
-        font.printTextIntoVboCentredInside(vboData, bufferIndex, labels[2], hIcon3Left, hIconBottom, hIcon4Left - hIcon3Left, hIconBottom - hIconLabelBottom, maxTextHeightPixels, screenSize, Gravity.CENTER)
+        font.printTextIntoVbo(vboData, bufferIndex, labels[2], hIcon3Left, hIconBottom, hIcon4Left - hIcon3Left, hIconBottom - hIconLabelBottom, maxTextHeightPixels, screenSize, Gravity.CENTER_HORIZONTAL, Gravity.CENTER_VERTICAL)
         bufferIndex += FLOATS_PER_QUAD * labels[2].length
-        font.printTextIntoVboCentredInside(vboData, bufferIndex, labels[3], hIcon4Left, hIconBottom, hIcon4Right - hIcon4Left, hIconBottom - hIconLabelBottom, maxTextHeightPixels, screenSize, Gravity.CENTER)
+        font.printTextIntoVbo(vboData, bufferIndex, labels[3], hIcon4Left, hIconBottom, hIcon4Right - hIcon4Left, hIconBottom - hIconLabelBottom, maxTextHeightPixels, screenSize, Gravity.CENTER_HORIZONTAL, Gravity.CENTER_VERTICAL)
         bufferIndex += FLOATS_PER_QUAD * labels[3].length
-        font.printTextIntoVboCentredInside(vboData, bufferIndex, labels[4], w2, hLowerIconsLabelTop, w3 - w2, hLowerIconsLabelTop - h2, maxTextHeightPixels, screenSize, Gravity.CENTER)
+        font.printTextIntoVbo(vboData, bufferIndex, labels[4], w2, hLowerIconsLabelTop, w3 - w2, hLowerIconsLabelTop - h2, maxTextHeightPixels, screenSize, Gravity.CENTER_HORIZONTAL, Gravity.CENTER_VERTICAL)
         bufferIndex += FLOATS_PER_QUAD * labels[4].length
-        font.printTextIntoVboCentredInside(vboData, bufferIndex, labels[5], w8, hLowerIconsLabelTop, w9 - w8, hLowerIconsLabelTop - h2, maxTextHeightPixels, screenSize, Gravity.CENTER)
+        font.printTextIntoVbo(vboData, bufferIndex, labels[5], w8, hLowerIconsLabelTop, w9 - w8, hLowerIconsLabelTop - h2, maxTextHeightPixels, screenSize, Gravity.CENTER_HORIZONTAL, Gravity.CENTER_VERTICAL)
         bufferIndex += FLOATS_PER_QUAD * labels[5].length
 
         return vboData.toFloatBuffer()

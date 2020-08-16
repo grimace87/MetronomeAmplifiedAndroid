@@ -42,15 +42,15 @@ class HelpHubTextsVertexBuffer : GlVertexBuffer() {
 
         var bufferIndex = 0
         val maxTextHeightPixels = 2.0f * marginDips * displayMetrics.density
-        font.printTextIntoVboCentredInside(vboData, bufferIndex, labels[0], leftX, t1, rightX - leftX, t1 - t2, maxTextHeightPixels, screenSize, Gravity.START)
+        font.printTextIntoVbo(vboData, bufferIndex, labels[0], leftX, t1, rightX - leftX, t1 - t2, maxTextHeightPixels, screenSize, Gravity.START, Gravity.CENTER_VERTICAL)
         bufferIndex += FLOATS_PER_QUAD * labels[0].length
-        font.printTextIntoVboCentredInside(vboData, bufferIndex, labels[1], leftX, t2, rightX - leftX, t2 - t3, maxTextHeightPixels, screenSize, Gravity.START)
+        font.printTextIntoVbo(vboData, bufferIndex, labels[1], leftX, t2, rightX - leftX, t2 - t3, maxTextHeightPixels, screenSize, Gravity.START, Gravity.CENTER_VERTICAL)
         bufferIndex += FLOATS_PER_QUAD * labels[1].length
-        font.printTextIntoVboCentredInside(vboData, bufferIndex, labels[2], leftX, t3, rightX - leftX, t3 - t4, maxTextHeightPixels, screenSize, Gravity.START)
+        font.printTextIntoVbo(vboData, bufferIndex, labels[2], leftX, t3, rightX - leftX, t3 - t4, maxTextHeightPixels, screenSize, Gravity.START, Gravity.CENTER_VERTICAL)
         bufferIndex += FLOATS_PER_QUAD * labels[2].length
-        font.printTextIntoVboCentredInside(vboData, bufferIndex, labels[3], leftX, t4, rightX - leftX, t4 - t5, maxTextHeightPixels, screenSize, Gravity.START)
+        font.printTextIntoVbo(vboData, bufferIndex, labels[3], leftX, t4, rightX - leftX, t4 - t5, maxTextHeightPixels, screenSize, Gravity.START, Gravity.CENTER_VERTICAL)
         bufferIndex += FLOATS_PER_QUAD * labels[3].length
-        font.printTextIntoVboCentredInside(vboData, bufferIndex, labels[4], leftX, t5, rightX - leftX, t5 - t6, maxTextHeightPixels, screenSize, Gravity.START)
+        font.printTextIntoVbo(vboData, bufferIndex, labels[4], leftX, t5, rightX - leftX, t5 - t6, maxTextHeightPixels, screenSize, Gravity.START, Gravity.CENTER_VERTICAL)
         bufferIndex += FLOATS_PER_QUAD * labels[4].length
 
         return vboData.toFloatBuffer()
