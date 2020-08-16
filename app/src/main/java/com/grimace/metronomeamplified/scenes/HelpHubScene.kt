@@ -10,10 +10,10 @@ import com.grimace.metronomeamplified.components.shaders.FontShader
 import com.grimace.metronomeamplified.components.textures.OrkneyTexture
 import com.grimace.metronomeamplified.components.textures.WoodenBackgroundTexture
 import com.grimace.metronomeamplified.components.vertexbuffers.MainScreenBackgroundVertexBuffer
-import com.grimace.metronomeamplified.components.vertexbuffers.SettingsHubTextsVertexBuffer
+import com.grimace.metronomeamplified.components.vertexbuffers.HelpHubTextsVertexBuffer
 import com.grimace.metronomeamplified.traits.GlScene
 
-class SettingsHubScene : GlScene {
+class HelpHubScene : GlScene {
 
     override val requiredShaders: List<Class<out GlShader>>
         get() = listOf(AlphaTextureShader::class.java, FontShader::class.java)
@@ -22,7 +22,7 @@ class SettingsHubScene : GlScene {
         get() = listOf(WoodenBackgroundTexture::class.java, OrkneyTexture::class.java)
 
     override val requiredVertexBuffers: List<Class<out GlVertexBuffer>>
-        get() = listOf(MainScreenBackgroundVertexBuffer::class.java, SettingsHubTextsVertexBuffer::class.java)
+        get() = listOf(MainScreenBackgroundVertexBuffer::class.java, HelpHubTextsVertexBuffer::class.java)
 
     // Main shader program shader handles
     private var mainProgramHandle = 0
@@ -67,7 +67,7 @@ class SettingsHubScene : GlScene {
         // Pre-fetch handles for font shader and resources to be used with that shader
         fontProgramHandle = shaders[FontShader::class.java]?.programHandle ?: 0
         fontTextureHandle = textures[OrkneyTexture::class.java]?.textureHandle ?: 0
-        textsVertexBufferHandle = vertexBuffers[SettingsHubTextsVertexBuffer::class.java]?.vertexBufferHandle ?: 0
+        textsVertexBufferHandle = vertexBuffers[HelpHubTextsVertexBuffer::class.java]?.vertexBufferHandle ?: 0
 
         // Get attributes for the font shader and make sure they're enabled
         fontProgramVertexAttrib = GLES20.glGetAttribLocation(fontProgramHandle, "aPosition")

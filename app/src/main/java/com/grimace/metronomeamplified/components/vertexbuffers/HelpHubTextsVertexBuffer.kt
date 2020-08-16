@@ -7,7 +7,7 @@ import com.grimace.metronomeamplified.components.FLOATS_PER_QUAD
 import com.grimace.metronomeamplified.components.GlVertexBuffer
 import java.nio.FloatBuffer
 
-class SettingsHubTextsVertexBuffer : GlVertexBuffer() {
+class HelpHubTextsVertexBuffer : GlVertexBuffer() {
 
     override val isWindowSizeDependent: Boolean = true
 

@@ -14,7 +14,7 @@ import com.grimace.metronomeamplified.components.textures.*
 import com.grimace.metronomeamplified.components.vertexbuffers.*
 import com.grimace.metronomeamplified.traits.GlScene
 
-class SettingsNavigatingScene : GlScene {
+class HelpNavigatingScene : GlScene {
 
     override val requiredShaders: List<Class<out GlShader>>
         get() = listOf(AlphaTextureShader::class.java, FontShader::class.java)
@@ -23,7 +23,7 @@ class SettingsNavigatingScene : GlScene {
         get() = listOf(WoodenBackgroundTexture::class.java, OrkneyTexture::class.java, WhiteTranslucentShapesTexture::class.java, IconsTexture::class.java, SampleScreenTexture::class.java)
 
     override val requiredVertexBuffers: List<Class<out GlVertexBuffer>>
-        get() = listOf(MainScreenBackgroundVertexBuffer::class.java, SettingsDetailsOverlayVertexBuffer::class.java, SettingsDetailsIconsVertexBuffer::class.java, SettingsNavigatingTextsVertexBuffer::class.java, SettingsNavigatingImagesVertexBuffer::class.java)
+        get() = listOf(MainScreenBackgroundVertexBuffer::class.java, HelpDetailsOverlayVertexBuffer::class.java, HelpDetailsIconsVertexBuffer::class.java, HelpNavigatingTextsVertexBuffer::class.java, HelpNavigatingImagesVertexBuffer::class.java)
 
     // Main shader program shader handles
     private var mainProgramHandle = 0
@@ -62,11 +62,11 @@ class SettingsNavigatingScene : GlScene {
         backgroundTextureHandle = textures[WoodenBackgroundTexture::class.java]?.textureHandle ?: 0
         backgroundVertexBufferHandle = vertexBuffers[MainScreenBackgroundVertexBuffer::class.java]?.vertexBufferHandle ?: 0
         overlayTextureHandle = textures[WhiteTranslucentShapesTexture::class.java]?.textureHandle ?: 0
-        overlayVertexBufferHandle = vertexBuffers[SettingsDetailsOverlayVertexBuffer::class.java]?.vertexBufferHandle ?: 0
+        overlayVertexBufferHandle = vertexBuffers[HelpDetailsOverlayVertexBuffer::class.java]?.vertexBufferHandle ?: 0
         iconsTextureHandle = textures[IconsTexture::class.java]?.textureHandle ?: 0
-        iconsVertexBufferHandle = vertexBuffers[SettingsDetailsIconsVertexBuffer::class.java]?.vertexBufferHandle ?: 0
+        iconsVertexBufferHandle = vertexBuffers[HelpDetailsIconsVertexBuffer::class.java]?.vertexBufferHandle ?: 0
         sampleImageTextureHandle = textures[SampleScreenTexture::class.java]?.textureHandle ?: 0
-        sampleImageVertexBufferHandle = vertexBuffers[SettingsNavigatingImagesVertexBuffer::class.java]?.vertexBufferHandle ?: 0
+        sampleImageVertexBufferHandle = vertexBuffers[HelpNavigatingImagesVertexBuffer::class.java]?.vertexBufferHandle ?: 0
 
         // Get attributes for the main shader and make sure they're enabled
         mainProgramVertexAttrib = GLES20.glGetAttribLocation(mainProgramHandle, "aPosition")
@@ -80,7 +80,7 @@ class SettingsNavigatingScene : GlScene {
         // Pre-fetch handles for font shader and resources to be used with that shader
         fontProgramHandle = shaders[FontShader::class.java]?.programHandle ?: 0
         fontTextureHandle = textures[OrkneyTexture::class.java]?.textureHandle ?: 0
-        textsVertexBufferHandle = vertexBuffers[SettingsNavigatingTextsVertexBuffer::class.java]?.vertexBufferHandle ?: 0
+        textsVertexBufferHandle = vertexBuffers[HelpNavigatingTextsVertexBuffer::class.java]?.vertexBufferHandle ?: 0
 
         // Get attributes for the font shader and make sure they're enabled
         fontProgramVertexAttrib = GLES20.glGetAttribLocation(fontProgramHandle, "aPosition")
