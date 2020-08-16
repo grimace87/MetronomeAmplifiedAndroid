@@ -230,9 +230,9 @@ class Font private constructor(
 
         // Set side margin, horizontal margin depends on supplied gravity
         val marginYPixels = 0.5f * (targetHeightPixels - renderHeightPixels)
-        val marginXPixels: Float = when {
-            horizontalGravity and Gravity.START != 0 -> 0.0f
-            horizontalGravity and Gravity.END != 0 -> targetWidthPixels - renderWidthPixels
+        val marginXPixels: Float = when (horizontalGravity) {
+            Gravity.START -> 0.0f
+            Gravity.END -> targetWidthPixels - renderWidthPixels
             else -> 0.5f * (targetWidthPixels - renderWidthPixels)
         }
 
