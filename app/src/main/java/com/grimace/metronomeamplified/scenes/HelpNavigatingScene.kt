@@ -175,10 +175,15 @@ class HelpNavigatingScene : GlScene {
             5 * FLOAT_SIZE_BYTES, 3 * FLOAT_SIZE_BYTES
         )
 
-        // Draw first line of text in white
+        // Draw heading in white
         GLES20.glUniform4f(fontProgramPaintColor, 1.0f, 1.0f, 1.0f, 1.0f)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fontTextureHandle)
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 108)
+
+        // Draw text body in black
+        GLES20.glUniform4f(fontProgramPaintColor, 0.0f, 0.0f, 0.0f, 1.0f)
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fontTextureHandle)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 108, 1908)
 
         // Unbind
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)
