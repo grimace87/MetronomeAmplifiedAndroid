@@ -21,6 +21,7 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer, SceneStackManag
 
     private var surfaceWidth = 0
     private var surfaceHeight = 0
+    private var lastTimeUpdate = 0L
 
     private val activity = WeakReference(activity)
     private val sceneStack = Stack<GlScene>()
@@ -30,6 +31,7 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer, SceneStackManag
 
     override fun pushScene(scene: GlScene) {
         val context: Context = activity.get() ?: return
+        lastTimeUpdate = System.currentTimeMillis()
         shaderCache.requireShaders(context, scene.requiredShaders)
         textureCache.requireTextures(context, scene.requiredTextures)
         vertexBufferCache.requireVertexBuffers(
@@ -85,12 +87,16 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer, SceneStackManag
     }
 
     override fun onDrawFrame(gl: GL10?) {
+
         if (sceneStack.empty()) {
             return
         }
 
+        val currentTime = System.currentTimeMillis()
+        val timeDelta = currentTime - lastTimeUpdate
+        lastTimeUpdate = currentTime
         val currentScene = sceneStack.peek()
-        currentScene.drawScene()
+        currentScene.drawScene(timeDelta.toDouble())
     }
 
     fun stackSize(): Int {

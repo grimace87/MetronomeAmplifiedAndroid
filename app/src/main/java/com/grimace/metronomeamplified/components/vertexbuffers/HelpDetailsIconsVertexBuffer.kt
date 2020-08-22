@@ -10,7 +10,7 @@ class HelpDetailsIconsVertexBuffer : GlVertexBuffer() {
 
     override val isWindowSizeDependent: Boolean = true
 
-    override val regionsOfInterest: List<RectF> = listOf()
+    override val regionsOfInterest: List<RectF> = listOf(RectF(), RectF())
 
     override fun generateVerticesForSize(context: Context, width: Int, height: Int): FloatBuffer {
 
@@ -35,6 +35,10 @@ class HelpDetailsIconsVertexBuffer : GlVertexBuffer() {
 
         data.putSquare(0                  , w1, h1, w2, h2, 0.875f, 0.5f, 1.0f, 1.0f)
         data.putSquare(1 * FLOATS_PER_QUAD, w3, h1, w4, h2, 1.0f, 0.5f, 0.875f, 1.0f)
+
+        // Note the normal y direction for RectF is positive downward, so swap top and bottom here
+        regionsOfInterest[0].set(w1, h1, w2, h2)
+        regionsOfInterest[1].set(w3, h1, w4, h2)
 
         return data.toFloatBuffer()
     }

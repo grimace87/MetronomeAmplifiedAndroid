@@ -9,5 +9,5 @@ interface GlRenderable {
         shaders: ShaderCache,
         textures: TextureCache,
         vertexBuffers: VertexBufferCache)
-    fun drawScene()
+    fun drawScene(timeDeltaMillis: Double)
 }

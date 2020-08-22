@@ -81,7 +81,7 @@ class HelpHubScene : GlScene {
         fontProgramPaintColor = GLES20.glGetUniformLocation(fontProgramHandle, "uPaintColor")
     }
 
-    override fun drawScene() {
+    override fun drawScene(timeDeltaMillis: Double) {
 
         // Clear
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
