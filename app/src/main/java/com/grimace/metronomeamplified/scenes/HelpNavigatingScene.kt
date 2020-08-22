@@ -13,6 +13,7 @@ import com.grimace.metronomeamplified.components.shaders.FontShader
 import com.grimace.metronomeamplified.components.textures.*
 import com.grimace.metronomeamplified.components.vertexbuffers.*
 import com.grimace.metronomeamplified.traits.GlScene
+import com.grimace.metronomeamplified.traits.SceneStackManager
 
 class HelpNavigatingScene : GlScene {
 
@@ -188,5 +189,9 @@ class HelpNavigatingScene : GlScene {
         // Unbind
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0)
+    }
+
+    override fun onPointerDown(normalisedX: Float, normalisedY: Float, stackManager: SceneStackManager) {
+
     }
 }

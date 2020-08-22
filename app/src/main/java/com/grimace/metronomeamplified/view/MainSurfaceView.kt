@@ -10,6 +10,7 @@ import com.grimace.metronomeamplified.renderer.MainRenderer
 class MainSurfaceView(activity: Activity) : GLSurfaceView(activity) {
 
     private val renderer: MainRenderer
+    private val locationArray = intArrayOf(0, 0)
 
     init {
         setEGLContextClientVersion(2)
@@ -19,9 +20,10 @@ class MainSurfaceView(activity: Activity) : GLSurfaceView(activity) {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        when (event.action) {
+        when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
-                queueEvent { renderer.onPointerDown() }
+                getLocationInWindow(locationArray)
+                queueEvent { renderer.onPointerDown(event.x, event.y - locationArray[1]) }
             }
         }
         return super.onTouchEvent(event)
@@ -31,7 +33,7 @@ class MainSurfaceView(activity: Activity) : GLSurfaceView(activity) {
         val stackSize = renderer.stackSize()
         val willEnd = stackSize < 2
         if (!willEnd) {
-            queueEvent { renderer.popScene() }
+            queueEvent { renderer.popTopScene() }
         }
         return !willEnd
     }

@@ -2,6 +2,7 @@ package com.grimace.metronomeamplified.components.vertexbuffers
 
 import android.content.Context
 import android.graphics.PointF
+import android.graphics.RectF
 import android.view.Gravity
 import com.grimace.metronomeamplified.components.FLOATS_PER_QUAD
 import com.grimace.metronomeamplified.components.GlVertexBuffer
@@ -10,6 +11,8 @@ import java.nio.FloatBuffer
 class HelpHubTextsVertexBuffer : GlVertexBuffer() {
 
     override val isWindowSizeDependent: Boolean = true
+
+    override val regionsOfInterest: List<RectF> = listOf(RectF(), RectF(), RectF(), RectF())
 
     override fun generateVerticesForSize(context: Context, width: Int, height: Int): FloatBuffer {
 
@@ -52,6 +55,12 @@ class HelpHubTextsVertexBuffer : GlVertexBuffer() {
         bufferIndex += FLOATS_PER_QUAD * labels[3].length
         font.printTextIntoVbo(vboData, bufferIndex, labels[4], leftX, t5, rightX - leftX, t5 - t6, maxTextHeightPixels, screenSize, Gravity.START, Gravity.CENTER_VERTICAL)
         bufferIndex += FLOATS_PER_QUAD * labels[4].length
+
+        // Note the normal y direction for RectF is positive downward, so swap top and bottom here
+        regionsOfInterest[0].set(leftX, t3, rightX, t2)
+        regionsOfInterest[1].set(leftX, t4, rightX, t3)
+        regionsOfInterest[2].set(leftX, t5, rightX, t4)
+        regionsOfInterest[3].set(leftX, t6, rightX, t5)
 
         return vboData.toFloatBuffer()
     }

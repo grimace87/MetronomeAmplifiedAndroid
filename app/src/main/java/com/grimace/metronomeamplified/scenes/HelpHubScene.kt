@@ -12,6 +12,7 @@ import com.grimace.metronomeamplified.components.textures.WoodenBackgroundTextur
 import com.grimace.metronomeamplified.components.vertexbuffers.MainScreenBackgroundVertexBuffer
 import com.grimace.metronomeamplified.components.vertexbuffers.HelpHubTextsVertexBuffer
 import com.grimace.metronomeamplified.traits.GlScene
+import com.grimace.metronomeamplified.traits.SceneStackManager
 
 class HelpHubScene : GlScene {
 
@@ -131,5 +132,13 @@ class HelpHubScene : GlScene {
         // Unbind
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0)
+    }
+
+    override fun onPointerDown(normalisedX: Float, normalisedY: Float, stackManager: SceneStackManager) {
+        val vboRegion = stackManager.checkForPointOfInterest(HelpHubTextsVertexBuffer::class.java, normalisedX, normalisedY)
+        when (vboRegion) {
+            0 -> stackManager.pushScene(HelpNavigatingScene())
+            else -> {}
+        }
     }
 }

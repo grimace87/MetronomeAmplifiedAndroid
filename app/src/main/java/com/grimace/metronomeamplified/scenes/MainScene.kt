@@ -16,6 +16,7 @@ import com.grimace.metronomeamplified.components.vertexbuffers.MainScreenIconLab
 import com.grimace.metronomeamplified.components.vertexbuffers.MainScreenIconsVertexBuffer
 import com.grimace.metronomeamplified.components.vertexbuffers.MainScreenTranslucentOverlayVertexBuffer
 import com.grimace.metronomeamplified.traits.GlScene
+import com.grimace.metronomeamplified.traits.SceneStackManager
 
 class MainScene : GlScene {
 
@@ -164,5 +165,13 @@ class MainScene : GlScene {
         // Unbind
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0)
+    }
+
+    override fun onPointerDown(normalisedX: Float, normalisedY: Float, stackManager: SceneStackManager) {
+        val vboRegion = stackManager.checkForPointOfInterest(MainScreenIconsVertexBuffer::class.java, normalisedX, normalisedY)
+        when (vboRegion) {
+            2 -> stackManager.pushScene(HelpHubScene())
+            else -> {}
+        }
     }
 }

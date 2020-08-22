@@ -7,17 +7,17 @@ import android.opengl.GLSurfaceView
 import com.grimace.metronomeamplified.caches.ShaderCache
 import com.grimace.metronomeamplified.caches.TextureCache
 import com.grimace.metronomeamplified.caches.VertexBufferCache
+import com.grimace.metronomeamplified.components.GlVertexBuffer
 import com.grimace.metronomeamplified.scenes.MainScene
-import com.grimace.metronomeamplified.scenes.HelpHubScene
-import com.grimace.metronomeamplified.scenes.HelpNavigatingScene
 import com.grimace.metronomeamplified.traits.GlScene
+import com.grimace.metronomeamplified.traits.SceneStackManager
 import java.lang.RuntimeException
 import java.lang.ref.WeakReference
 import java.util.*
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class MainRenderer(activity: Activity) : GLSurfaceView.Renderer {
+class MainRenderer(activity: Activity) : GLSurfaceView.Renderer, SceneStackManager {
 
     private var surfaceWidth = 0
     private var surfaceHeight = 0
@@ -28,7 +28,7 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer {
     private val textureCache = TextureCache()
     private val vertexBufferCache = VertexBufferCache()
 
-    private fun pushNewScene(scene: GlScene) {
+    override fun pushScene(scene: GlScene) {
         val context: Context = activity.get() ?: return
         shaderCache.requireShaders(context, scene.requiredShaders)
         textureCache.requireTextures(context, scene.requiredTextures)
@@ -41,7 +41,7 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer {
         sceneStack.push(scene)
     }
 
-    fun popScene() {
+    override fun popTopScene() {
 
         // Check for popping from empty stack
         if (sceneStack.empty()) {
@@ -73,7 +73,7 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer {
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         GLES20.glClearColor(0f, 0f, 0f, 1f)
-        pushNewScene(MainScene())
+        pushScene(MainScene())
     }
 
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
@@ -97,11 +97,21 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer {
         return sceneStack.size
     }
 
-    fun onPointerDown() {
-        if (sceneStack.size == 1) {
-            pushNewScene(HelpHubScene())
-        } else if (sceneStack.size == 2) {
-            pushNewScene(HelpNavigatingScene())
+    override fun <T : GlVertexBuffer> checkForPointOfInterest(vboClass: Class<T>, normalisedX: Float, normalisedY: Float): Int {
+        val vbo = vertexBufferCache[vboClass] ?: return -1
+        return vbo.regionOfInterestAt(normalisedX, normalisedY)
+    }
+
+    fun onPointerDown(x: Float, y: Float) {
+        if (surfaceWidth == 0 || surfaceHeight == 0) {
+            throw RuntimeException("Cannot process touch events before surface size is set")
+        }
+
+        val normalisedX = 2.0f * x / surfaceWidth.toFloat() - 1.0f
+        val normalisedY = -2.0f * y / surfaceHeight.toFloat() + 1.0f
+        if (sceneStack.isNotEmpty()) {
+            val topScene = sceneStack.peek()
+            topScene.onPointerDown(normalisedX, normalisedY, this)
         }
     }
 }

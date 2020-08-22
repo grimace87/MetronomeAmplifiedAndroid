@@ -2,6 +2,7 @@ package com.grimace.metronomeamplified.components.vertexbuffers
 
 import android.content.Context
 import android.graphics.PointF
+import android.graphics.RectF
 import android.view.Gravity
 import com.grimace.metronomeamplified.components.FLOATS_PER_QUAD
 import com.grimace.metronomeamplified.components.GlVertexBuffer
@@ -10,6 +11,8 @@ import java.nio.FloatBuffer
 class MainScreenIconLabelsVertexBuffer : GlVertexBuffer() {
 
     override val isWindowSizeDependent: Boolean = true
+
+    override val regionsOfInterest: List<RectF> = listOf()
 
     override fun generateVerticesForSize(context: Context, width: Int, height: Int): FloatBuffer {
 

@@ -2,8 +2,8 @@ package com.grimace.metronomeamplified.components
 
 import android.content.Context
 import android.graphics.PointF
+import android.graphics.RectF
 import android.opengl.GLES20
-import android.view.Gravity
 import com.grimace.metronomeamplified.utils.Font
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -32,6 +32,17 @@ abstract class GlVertexBuffer {
     private var isValid = false
 
     abstract val isWindowSizeDependent: Boolean
+
+    abstract val regionsOfInterest: List<RectF>
+
+    fun regionOfInterestAt(xNormalised: Float, yNormalised: Float): Int {
+        regionsOfInterest.forEachIndexed { index, region ->
+            if (region.contains(xNormalised, yNormalised)) {
+                return index
+            }
+        }
+        return -1
+    }
 
     protected abstract fun generateVerticesForSize(context: Context, width: Int, height: Int): FloatBuffer
 
