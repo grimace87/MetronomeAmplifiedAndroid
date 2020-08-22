@@ -218,60 +218,102 @@ class Font private constructor(
         val pixelsPerUnitWidth = screenSize.x / 2.0f
         val pixelsPerUnitHeight = screenSize.y / 2.0f
 
-        // Convert target area to pixel sizes and coordinates
+        // Get available area and print line height in pixels
         val targetWidthPixels = pixelsPerUnitWidth * boxWidth
         val targetHeightPixels = pixelsPerUnitHeight * boxHeight
-        val renderHeightPixels = min(targetHeightPixels, maxHeightPixels)
-        val screenPixelsPerFontPixel = renderHeightPixels / this.lineHeight
-        var renderWidthPixels = 0.0f
-        for (c: Char in textToRender) {
-            val glyph = this.glyphs[c.toInt()] ?: continue
-            renderWidthPixels += glyph.advanceX * screenPixelsPerFontPixel
+        val lineHeightPixels = min(targetHeightPixels, maxHeightPixels)
+        val screenPixelsPerFontPixel = lineHeightPixels / this.lineHeight
+
+        // Do an initial pass to determine how many lines need to be rendered, and how many
+        // characters will be on each of those lines
+        val charactersPerLine = ArrayList<Int>()
+        val pixelWidthOfLine = ArrayList<Float>()
+        var pixelsAcrossThisLine = 0.0f
+        var currentWordBegunAt = 0
+        var pixelsIntoThisWord = 0.0f
+        var charsForThisLine = 0
+        textToRender.forEachIndexed { index, c ->
+            this.glyphs[c.toInt()]?.let { glyph ->
+                val advance = glyph.advanceX * screenPixelsPerFontPixel
+                pixelsAcrossThisLine += advance
+                pixelsIntoThisWord += advance
+                charsForThisLine++
+                if (c == ' ') {
+                    currentWordBegunAt = index + 1
+                    pixelsIntoThisWord = 0.0f
+                } else if (pixelsAcrossThisLine > targetWidthPixels) {
+                    if (index - currentWordBegunAt + 1 == charsForThisLine) {
+                        charactersPerLine.add(index - currentWordBegunAt)
+                        currentWordBegunAt = index
+                        charsForThisLine = 1
+                        pixelWidthOfLine.add(pixelsAcrossThisLine - advance)
+                        pixelsAcrossThisLine = advance
+                        pixelsIntoThisWord = advance
+                    } else {
+                        val charactersForNextLine = index + 1 - currentWordBegunAt
+                        charactersPerLine.add(charsForThisLine - charactersForNextLine)
+                        charsForThisLine = charactersForNextLine
+                        pixelWidthOfLine.add(pixelsAcrossThisLine - pixelsIntoThisWord)
+                        pixelsAcrossThisLine = pixelsIntoThisWord
+                    }
+                }
+            }
+        }
+        if (charsForThisLine > 0) {
+            charactersPerLine.add(charsForThisLine)
+            pixelWidthOfLine.add(pixelsAcrossThisLine)
         }
 
         // Set side margin, horizontal margin depends on supplied gravity
+        val totalTextHeightPixels = charactersPerLine.size.toFloat() * lineHeightPixels
         val marginYPixels: Float = when (verticalGravity) {
-            Gravity.START -> targetHeightPixels - renderHeightPixels
+            Gravity.START -> targetHeightPixels - totalTextHeightPixels
             Gravity.END -> 0.0f
-            else -> 0.5f * (targetHeightPixels - renderHeightPixels)
-        }
-        val marginXPixels: Float = when (horizontalGravity) {
-            Gravity.START -> 0.0f
-            Gravity.END -> targetWidthPixels - renderWidthPixels
-            else -> 0.5f * (targetWidthPixels - renderWidthPixels)
+            else -> 0.5f * (targetHeightPixels - totalTextHeightPixels)
         }
 
         // Start building the buffer
         var charsRendered = 0
         val widthUnitsPerFontPixel = screenPixelsPerFontPixel / pixelsPerUnitWidth
         val heightUnitsPerFontPixel = screenPixelsPerFontPixel / pixelsPerUnitHeight
-        var penX: Float = left + marginXPixels / pixelsPerUnitWidth
-        val penY: Float = top - boxHeight + marginYPixels / pixelsPerUnitHeight
-        for (c: Char in textToRender) {
+        var penY: Float = top - boxHeight + marginYPixels / pixelsPerUnitHeight + (charactersPerLine.size - 1).toFloat() * lineHeightPixels / pixelsPerUnitHeight
+        var textIndex = 0
+        charactersPerLine.forEachIndexed { index, charsOnLine ->
+            val lineWidthPixels = pixelWidthOfLine[index]
+            val marginXPixels: Float = when (horizontalGravity) {
+                Gravity.START -> 0.0f
+                Gravity.END -> targetWidthPixels - lineWidthPixels
+                else -> 0.5f * (targetWidthPixels - lineWidthPixels)
+            }
+            var penX: Float = left + marginXPixels / pixelsPerUnitWidth
+            for (i in 0.until(charsOnLine)) {
+                val char = textToRender[textIndex]
+                textIndex++
+                val glyph = this.glyphs[char.toInt()] ?: continue
 
-            val glyph = this.glyphs[c.toInt()] ?: continue
+                val xMin = penX + glyph.offsetX * widthUnitsPerFontPixel
+                val xMax = xMin + glyph.width * widthUnitsPerFontPixel
+                val yMax = penY + (this.baseHeight - glyph.offsetY) * heightUnitsPerFontPixel
+                val yMin = yMax - glyph.height * heightUnitsPerFontPixel
 
-            val xMin = penX + glyph.offsetX * widthUnitsPerFontPixel
-            val xMax = xMin + glyph.width * widthUnitsPerFontPixel
-            val yMax = penY + (this.baseHeight - glyph.offsetY) * heightUnitsPerFontPixel
-            val yMin = yMax - glyph.height * heightUnitsPerFontPixel
+                val sMin = glyph.textureS / FONT_TEXTURE_SIZE
+                val sMax = sMin + glyph.width / FONT_TEXTURE_SIZE
+                val tMin = glyph.textureT / FONT_TEXTURE_SIZE
+                val tMax = tMin + glyph.height / FONT_TEXTURE_SIZE
 
-            val sMin = glyph.textureS / FONT_TEXTURE_SIZE
-            val sMax = sMin + glyph.width / FONT_TEXTURE_SIZE
-            val tMin = glyph.textureT / FONT_TEXTURE_SIZE
-            val tMax = tMin + glyph.height / FONT_TEXTURE_SIZE
-
-            val quadData = floatArrayOf(
-                xMin, yMax, 0.0f, sMin, tMin,
-                xMin, yMin, 0.0f, sMin, tMax,
-                xMax, yMin, 0.0f, sMax, tMax,
-                xMax, yMin, 0.0f, sMax, tMax,
-                xMax, yMax, 0.0f, sMax, tMin,
-                xMin, yMax, 0.0f, sMin, tMin
-            )
-            quadData.copyInto(vboData, startIndex + charsRendered * FLOATS_PER_QUAD)
-            penX += glyph.advanceX * widthUnitsPerFontPixel
-            charsRendered++
+                val quadData = floatArrayOf(
+                    xMin, yMax, 0.0f, sMin, tMin,
+                    xMin, yMin, 0.0f, sMin, tMax,
+                    xMax, yMin, 0.0f, sMax, tMax,
+                    xMax, yMin, 0.0f, sMax, tMax,
+                    xMax, yMax, 0.0f, sMax, tMin,
+                    xMin, yMax, 0.0f, sMin, tMin
+                )
+                quadData.copyInto(vboData, startIndex + charsRendered * FLOATS_PER_QUAD)
+                penX += glyph.advanceX * widthUnitsPerFontPixel
+                charsRendered++
+            }
+            penY -= lineHeightPixels / pixelsPerUnitHeight
         }
     }
 }
