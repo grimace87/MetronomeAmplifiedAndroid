@@ -25,12 +25,24 @@ class HelpHubScene : GlScene {
     override val requiredVertexBuffers: List<Class<out GlVertexBuffer>>
         get() = listOf(MainScreenBackgroundVertexBuffer::class.java, HelpHubTextsVertexBuffer::class.java)
 
+    private lateinit var mainShader: GlShader
+    private lateinit var fontShader: FontShader
+    private lateinit var backgroundTexture: GlTexture
+    private lateinit var fontTexture: GlTexture
+    private lateinit var backgroundVbo: GlVertexBuffer
+    private lateinit var textsVbo: GlVertexBuffer
+    
     override fun onResourcesAvailable(
         shaders: ShaderCache,
         textures: TextureCache,
         vertexBuffers: VertexBufferCache
     ) {
-
+        mainShader = shaders[AlphaTextureShader::class.java]!!
+        fontShader = shaders[FontShader::class.java]!! as FontShader
+        backgroundTexture = textures[WoodenBackgroundTexture::class.java]!!
+        fontTexture = textures[OrkneyTexture::class.java]!!
+        backgroundVbo = vertexBuffers[MainScreenBackgroundVertexBuffer::class.java]!!
+        textsVbo = vertexBuffers[HelpHubTextsVertexBuffer::class.java]!!
     }
 
     override fun drawScene(timeDeltaMillis: Double, stackManager: SceneStackManager) {
@@ -39,14 +51,6 @@ class HelpHubScene : GlScene {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
         GLES20.glEnable(GLES20.GL_BLEND)
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
-
-        // Get shaders and VBOs
-        val mainShader = stackManager.getShader(AlphaTextureShader::class.java) ?: return
-        val fontShader = stackManager.getShader(FontShader::class.java) as? FontShader ?: return
-        val backgroundTexture = stackManager.getTexture(WoodenBackgroundTexture::class.java) ?: return
-        val fontTexture = stackManager.getTexture(OrkneyTexture::class.java) ?: return
-        val backgroundVbo = stackManager.getVertexBuffer(MainScreenBackgroundVertexBuffer::class.java) ?: return
-        val textsVbo = stackManager.getVertexBuffer(HelpHubTextsVertexBuffer::class.java) ?: return
 
         // Set main program and active texture
         mainShader.activate()

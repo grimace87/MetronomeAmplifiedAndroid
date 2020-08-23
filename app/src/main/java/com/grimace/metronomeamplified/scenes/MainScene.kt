@@ -29,12 +29,32 @@ class MainScene : GlScene {
     override val requiredVertexBuffers: List<Class<out GlVertexBuffer>>
         get() = listOf(MainScreenBackgroundVertexBuffer::class.java, MainScreenTranslucentOverlayVertexBuffer::class.java, MainScreenIconsVertexBuffer::class.java, MainScreenIconLabelsVertexBuffer::class.java)
 
+    private lateinit var mainShader: GlShader
+    private lateinit var fontShader: FontShader
+    private lateinit var backgroundTexture: GlTexture
+    private lateinit var overlayTexture: GlTexture
+    private lateinit var iconsTexture: GlTexture
+    private lateinit var fontTexture: GlTexture
+    private lateinit var backgroundVbo: GlVertexBuffer
+    private lateinit var overlayVbo: GlVertexBuffer
+    private lateinit var iconsVbo: GlVertexBuffer
+    private lateinit var labelsVbo: GlVertexBuffer
+    
     override fun onResourcesAvailable(
         shaders: ShaderCache,
         textures: TextureCache,
         vertexBuffers: VertexBufferCache
     ) {
-
+        mainShader = shaders[AlphaTextureShader::class.java]!!
+        fontShader = shaders[FontShader::class.java]!! as FontShader
+        backgroundTexture = textures[WoodenBackgroundTexture::class.java]!!
+        overlayTexture = textures[WhiteTranslucentShapesTexture::class.java]!!
+        iconsTexture = textures[IconsTexture::class.java]!!
+        fontTexture = textures[OrkneyTexture::class.java]!!
+        backgroundVbo = vertexBuffers[MainScreenBackgroundVertexBuffer::class.java]!!
+        overlayVbo = vertexBuffers[MainScreenTranslucentOverlayVertexBuffer::class.java]!!
+        iconsVbo = vertexBuffers[MainScreenIconsVertexBuffer::class.java]!!
+        labelsVbo = vertexBuffers[MainScreenIconLabelsVertexBuffer::class.java]!!
     }
 
     override fun drawScene(timeDeltaMillis: Double, stackManager: SceneStackManager) {
@@ -43,18 +63,6 @@ class MainScene : GlScene {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
         GLES20.glEnable(GLES20.GL_BLEND)
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
-
-        // Get shaders and VBOs
-        val mainShader = stackManager.getShader(AlphaTextureShader::class.java) ?: return
-        val fontShader = stackManager.getShader(FontShader::class.java) as? FontShader ?: return
-        val backgroundTexture = stackManager.getTexture(WoodenBackgroundTexture::class.java) ?: return
-        val overlayTexture = stackManager.getTexture(WhiteTranslucentShapesTexture::class.java) ?: return
-        val iconsTexture = stackManager.getTexture(IconsTexture::class.java) ?: return
-        val fontTexture = stackManager.getTexture(OrkneyTexture::class.java) ?: return
-        val backgroundVbo = stackManager.getVertexBuffer(MainScreenBackgroundVertexBuffer::class.java) ?: return
-        val overlayVbo = stackManager.getVertexBuffer(MainScreenTranslucentOverlayVertexBuffer::class.java) ?: return
-        val iconsVbo = stackManager.getVertexBuffer(MainScreenIconsVertexBuffer::class.java) ?: return
-        val labelsVbo = stackManager.getVertexBuffer(MainScreenIconLabelsVertexBuffer::class.java) ?: return
 
         // Set main program and active texture
         mainShader.activate()

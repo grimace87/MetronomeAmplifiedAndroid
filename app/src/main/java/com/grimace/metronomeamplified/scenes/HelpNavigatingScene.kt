@@ -27,6 +27,19 @@ class HelpNavigatingScene : GlScene {
     override val requiredVertexBuffers: List<Class<out GlVertexBuffer>>
         get() = listOf(MainScreenBackgroundVertexBuffer::class.java, HelpDetailsOverlayVertexBuffer::class.java, HelpDetailsIconsVertexBuffer::class.java, HelpNavigatingTextsVertexBuffer::class.java, HelpNavigatingImagesVertexBuffer::class.java)
 
+    private lateinit var mainShader: AlphaTextureTransformShader
+    private lateinit var fontShader: FontTransformShader
+    private lateinit var backgroundTexture: GlTexture
+    private lateinit var overlayTexture: GlTexture
+    private lateinit var iconsTexture: GlTexture
+    private lateinit var imagesTexture: GlTexture
+    private lateinit var fontTexture: GlTexture
+    private lateinit var backgroundVbo: GlVertexBuffer
+    private lateinit var iconsVbo: GlVertexBuffer
+    private lateinit var overlayVbo: GlVertexBuffer
+    private lateinit var imagesVbo: GlVertexBuffer
+    private lateinit var textsVbo: GlVertexBuffer
+
     // Animation state
     private var isAnimating = false
     private var focusCard = 0
@@ -40,7 +53,18 @@ class HelpNavigatingScene : GlScene {
         textures: TextureCache,
         vertexBuffers: VertexBufferCache
     ) {
-
+        mainShader = shaders[AlphaTextureTransformShader::class.java] as AlphaTextureTransformShader
+        fontShader = shaders[FontTransformShader::class.java]!! as FontTransformShader
+        backgroundTexture = textures[WoodenBackgroundTexture::class.java]!!
+        overlayTexture = textures[WhiteTranslucentShapesTexture::class.java]!!
+        iconsTexture = textures[IconsTexture::class.java]!!
+        imagesTexture = textures[SampleScreenTexture::class.java]!!
+        fontTexture = textures[OrkneyTexture::class.java]!!
+        backgroundVbo = vertexBuffers[MainScreenBackgroundVertexBuffer::class.java]!!
+        iconsVbo = vertexBuffers[HelpDetailsIconsVertexBuffer::class.java]!!
+        overlayVbo = vertexBuffers[HelpDetailsOverlayVertexBuffer::class.java]!!
+        imagesVbo = vertexBuffers[HelpNavigatingImagesVertexBuffer::class.java]!!
+        textsVbo = vertexBuffers[HelpNavigatingTextsVertexBuffer::class.java]!!
     }
 
     override fun drawScene(timeDeltaMillis: Double, stackManager: SceneStackManager) {
@@ -49,20 +73,6 @@ class HelpNavigatingScene : GlScene {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
         GLES20.glEnable(GLES20.GL_BLEND)
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
-
-        // Get shaders and VBOs
-        val mainShader = stackManager.getShader(AlphaTextureTransformShader::class.java) as? AlphaTextureTransformShader ?: return
-        val fontShader = stackManager.getShader(FontTransformShader::class.java) as? FontTransformShader ?: return
-        val backgroundTexture = stackManager.getTexture(WoodenBackgroundTexture::class.java) ?: return
-        val overlayTexture = stackManager.getTexture(WhiteTranslucentShapesTexture::class.java) ?: return
-        val iconsTexture = stackManager.getTexture(IconsTexture::class.java) ?: return
-        val imagesTexture = stackManager.getTexture(SampleScreenTexture::class.java) ?: return
-        val fontTexture = stackManager.getTexture(OrkneyTexture::class.java) ?: return
-        val backgroundVbo = stackManager.getVertexBuffer(MainScreenBackgroundVertexBuffer::class.java) ?: return
-        val iconsVbo = stackManager.getVertexBuffer(HelpDetailsIconsVertexBuffer::class.java) ?: return
-        val overlayVbo = stackManager.getVertexBuffer(HelpDetailsOverlayVertexBuffer::class.java) ?: return
-        val imagesVbo = stackManager.getVertexBuffer(HelpNavigatingImagesVertexBuffer::class.java) ?: return
-        val textsVbo = stackManager.getVertexBuffer(HelpNavigatingTextsVertexBuffer::class.java) ?: return
 
         // Update matrices
         updateMatrices(timeDeltaMillis)
