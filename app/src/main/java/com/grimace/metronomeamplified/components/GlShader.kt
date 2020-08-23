@@ -12,6 +12,11 @@ abstract class GlShader(
     var programHandle: Int = 0
         private set
 
+    abstract val attribs: IntArray
+
+    abstract fun prepare()
+    abstract fun activate()
+
     private var vertexShaderHandle: Int = 0
     private var fragmentShaderHandle: Int = 0
 

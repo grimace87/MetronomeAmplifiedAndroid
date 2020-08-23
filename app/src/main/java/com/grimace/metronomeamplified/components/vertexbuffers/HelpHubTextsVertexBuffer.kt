@@ -3,10 +3,9 @@ package com.grimace.metronomeamplified.components.vertexbuffers
 import android.content.Context
 import android.graphics.PointF
 import android.graphics.RectF
+import android.opengl.GLES20
 import android.view.Gravity
-import com.grimace.metronomeamplified.components.FLOATS_PER_QUAD
-import com.grimace.metronomeamplified.components.FLOATS_PER_VERTEX
-import com.grimace.metronomeamplified.components.GlVertexBuffer
+import com.grimace.metronomeamplified.components.*
 import java.nio.FloatBuffer
 
 class HelpHubTextsVertexBuffer : GlVertexBuffer() {
@@ -68,5 +67,16 @@ class HelpHubTextsVertexBuffer : GlVertexBuffer() {
         regionsOfInterest[3].set(leftX, t6, rightX, t5)
 
         return vboData.toFloatBuffer()
+    }
+
+    override fun activate(shader: GlShader) {
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferHandle)
+        GLES20.glVertexAttribPointer(shader.attribs[0],
+            3, GLES20.GL_FLOAT, false,
+            5 * FLOAT_SIZE_BYTES, 0)
+        GLES20.glVertexAttribPointer(shader.attribs[1],
+            2, GLES20.GL_FLOAT, false,
+            5 * FLOAT_SIZE_BYTES, 3 * FLOAT_SIZE_BYTES
+        )
     }
 }

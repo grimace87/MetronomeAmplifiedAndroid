@@ -25,60 +25,18 @@ class HelpHubScene : GlScene {
     override val requiredVertexBuffers: List<Class<out GlVertexBuffer>>
         get() = listOf(MainScreenBackgroundVertexBuffer::class.java, HelpHubTextsVertexBuffer::class.java)
 
-    // Main shader program shader handles
-    private var mainProgramHandle = 0
-    private var mainProgramVertexAttrib = 0
-    private var mainProgramTextureCoordAttrib = 0
-    private var mainProgramTextureSampler = 0
-
-    // Resources used with main shader
+    // Textures
     private var backgroundTextureHandle = 0
-    private var backgroundVertexBufferHandle = 0
-
-    // Font shader program handles
-    private var fontProgramHandle = 0
-    private var fontProgramVertexAttrib = 0
-    private var fontProgramTextureCoordAttrib = 0
-    private var fontProgramTextureSampler = 0
-    private var fontProgramPaintColor = 0
-
-    // Resources used with font shader
     private var fontTextureHandle = 0
-    private var textsVertexBufferHandle = 0
 
     override fun onResourcesAvailable(
         shaders: ShaderCache,
         textures: TextureCache,
         vertexBuffers: VertexBufferCache
     ) {
-        // Pre-fetch handles for main shader and resources to be used with that shader
-        mainProgramHandle = shaders[AlphaTextureShader::class.java]?.programHandle ?: 0
+        // Pre-fetch handles for textures
         backgroundTextureHandle = textures[WoodenBackgroundTexture::class.java]?.textureHandle ?: 0
-        backgroundVertexBufferHandle = vertexBuffers[MainScreenBackgroundVertexBuffer::class.java]?.vertexBufferHandle ?: 0
-
-        // Get attributes for the main shader and make sure they're enabled
-        mainProgramVertexAttrib = GLES20.glGetAttribLocation(mainProgramHandle, "aPosition")
-        mainProgramTextureCoordAttrib = GLES20.glGetAttribLocation(mainProgramHandle, "aTextureCoord")
-        GLES20.glEnableVertexAttribArray(mainProgramVertexAttrib)
-        GLES20.glEnableVertexAttribArray(mainProgramTextureCoordAttrib)
-
-        // Get uniforms for the main shader
-        mainProgramTextureSampler = GLES20.glGetUniformLocation(mainProgramHandle, "uTextureSampler")
-
-        // Pre-fetch handles for font shader and resources to be used with that shader
-        fontProgramHandle = shaders[FontShader::class.java]?.programHandle ?: 0
         fontTextureHandle = textures[OrkneyTexture::class.java]?.textureHandle ?: 0
-        textsVertexBufferHandle = vertexBuffers[HelpHubTextsVertexBuffer::class.java]?.vertexBufferHandle ?: 0
-
-        // Get attributes for the font shader and make sure they're enabled
-        fontProgramVertexAttrib = GLES20.glGetAttribLocation(fontProgramHandle, "aPosition")
-        fontProgramTextureCoordAttrib = GLES20.glGetAttribLocation(fontProgramHandle, "aTextureCoord")
-        GLES20.glEnableVertexAttribArray(fontProgramVertexAttrib)
-        GLES20.glEnableVertexAttribArray(fontProgramTextureCoordAttrib)
-
-        // Get uniforms for the font shader
-        fontProgramTextureSampler = GLES20.glGetUniformLocation(fontProgramHandle, "uTextureSampler")
-        fontProgramPaintColor = GLES20.glGetUniformLocation(fontProgramHandle, "uPaintColor")
     }
 
     override fun drawScene(timeDeltaMillis: Double, stackManager: SceneStackManager) {
@@ -88,48 +46,31 @@ class HelpHubScene : GlScene {
         GLES20.glEnable(GLES20.GL_BLEND)
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
 
-        // Get VBOs
-        val backgroundVbo: GlVertexBuffer = stackManager.getVertexBuffer(MainScreenBackgroundVertexBuffer::class.java) ?: return
-        val textsVbo: GlVertexBuffer = stackManager.getVertexBuffer(HelpHubTextsVertexBuffer::class.java) ?: return
+        // Get shaders and VBOs
+        val mainShader = stackManager.getShader(AlphaTextureShader::class.java) ?: return
+        val fontShader = stackManager.getShader(FontShader::class.java) as? FontShader ?: return
+        val backgroundVbo = stackManager.getVertexBuffer(MainScreenBackgroundVertexBuffer::class.java) ?: return
+        val textsVbo = stackManager.getVertexBuffer(HelpHubTextsVertexBuffer::class.java) ?: return
 
         // Set main program and active texture
-        GLES20.glUseProgram(mainProgramHandle)
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
-        GLES20.glUniform1i(mainProgramTextureSampler, 0)
-
-        // Load vertex array
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, backgroundVertexBufferHandle)
-        GLES20.glVertexAttribPointer(mainProgramVertexAttrib,
-            3, GLES20.GL_FLOAT, false,
-            5 * FLOAT_SIZE_BYTES, 0)
-        GLES20.glVertexAttribPointer(mainProgramTextureCoordAttrib,
-            2, GLES20.GL_FLOAT, false,
-            5 * FLOAT_SIZE_BYTES, 3 * FLOAT_SIZE_BYTES)
+        mainShader.activate()
 
         // Draw background vertices
+        backgroundVbo.activate(mainShader)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backgroundTextureHandle)
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, backgroundVbo.subBufferVertexIndices[0], backgroundVbo.verticesInSubBuffer(0))
 
         // Set font program
-        GLES20.glUseProgram(fontProgramHandle)
-        GLES20.glUniform1i(fontProgramTextureSampler, 0)
-
-        // Load vertex array
-        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, textsVertexBufferHandle)
-        GLES20.glVertexAttribPointer(fontProgramVertexAttrib,
-            3, GLES20.GL_FLOAT, false,
-            5 * FLOAT_SIZE_BYTES, 0)
-        GLES20.glVertexAttribPointer(fontProgramTextureCoordAttrib,
-            2, GLES20.GL_FLOAT, false,
-            5 * FLOAT_SIZE_BYTES, 3 * FLOAT_SIZE_BYTES)
+        fontShader.activate()
 
         // Draw first line of text in white
-        GLES20.glUniform4f(fontProgramPaintColor, 1.0f, 1.0f, 1.0f, 1.0f)
+        textsVbo.activate(fontShader)
+        fontShader.setPaintColour(1.0f, 1.0f, 1.0f, 1.0f)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fontTextureHandle)
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, textsVbo.subBufferVertexIndices[0], textsVbo.verticesInSubBuffer(0))
 
         // Draw remaining lines in the sand (colour)
-        GLES20.glUniform4f(fontProgramPaintColor, 0.96f, 0.87f, 0.70f, 1.0f)
+        fontShader.setPaintColour(0.96f, 0.87f, 0.70f, 1.0f)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fontTextureHandle)
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, textsVbo.subBufferVertexIndices[1], textsVbo.verticesInSubBuffer(1))
 

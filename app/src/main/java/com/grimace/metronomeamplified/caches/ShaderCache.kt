@@ -16,6 +16,7 @@ class ShaderCache {
                 if (compileResult != null) {
                     throw RuntimeException(compileResult)
                 }
+                shader.prepare()
                 shaders[shaderClass] = shader
             }
         }

@@ -37,6 +37,8 @@ abstract class GlVertexBuffer {
     abstract val subBufferVertexIndices: IntArray
     abstract val regionsOfInterest: Array<RectF>
 
+    abstract fun activate(shader: GlShader)
+
     fun regionOfInterestAt(xNormalised: Float, yNormalised: Float): Int {
         regionsOfInterest.forEachIndexed { index, region ->
             if (region.contains(xNormalised, yNormalised)) {

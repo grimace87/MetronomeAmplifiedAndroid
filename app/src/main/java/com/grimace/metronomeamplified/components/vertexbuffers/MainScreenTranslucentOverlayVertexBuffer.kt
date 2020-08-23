@@ -3,9 +3,8 @@ package com.grimace.metronomeamplified.components.vertexbuffers
 import android.content.Context
 import android.graphics.PointF
 import android.graphics.RectF
-import com.grimace.metronomeamplified.components.FLOATS_PER_QUAD
-import com.grimace.metronomeamplified.components.GlVertexBuffer
-import com.grimace.metronomeamplified.components.VERTICES_PER_QUAD
+import android.opengl.GLES20
+import com.grimace.metronomeamplified.components.*
 import java.nio.FloatBuffer
 
 class MainScreenTranslucentOverlayVertexBuffer : GlVertexBuffer() {
@@ -70,5 +69,16 @@ class MainScreenTranslucentOverlayVertexBuffer : GlVertexBuffer() {
         data.putSquare(17 * FLOATS_PER_QUAD, w9, h5, w10, h6, 0.5f, 0.5f, 0.0f, 0.0f)
 
         return data.toFloatBuffer()
+    }
+
+    override fun activate(shader: GlShader) {
+        GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexBufferHandle)
+        GLES20.glVertexAttribPointer(shader.attribs[0],
+            3, GLES20.GL_FLOAT, false,
+            5 * FLOAT_SIZE_BYTES, 0)
+        GLES20.glVertexAttribPointer(shader.attribs[1],
+            2, GLES20.GL_FLOAT, false,
+            5 * FLOAT_SIZE_BYTES, 3 * FLOAT_SIZE_BYTES
+        )
     }
 }
