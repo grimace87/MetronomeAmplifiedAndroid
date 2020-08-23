@@ -35,24 +35,12 @@ class HelpNavigatingScene : GlScene {
     private val identityMatrix = FloatArray(16).apply { Matrix.setIdentityM(this, 0) }
     private val transformMatrix = FloatArray(16)
 
-    // Textures
-    private var backgroundTextureHandle = 0
-    private var overlayTextureHandle = 0
-    private var iconsTextureHandle = 0
-    private var sampleImageTextureHandle = 0
-    private var fontTextureHandle = 0
-
     override fun onResourcesAvailable(
         shaders: ShaderCache,
         textures: TextureCache,
         vertexBuffers: VertexBufferCache
     ) {
-        // Pre-fetch handles for textures
-        backgroundTextureHandle = textures[WoodenBackgroundTexture::class.java]?.textureHandle ?: 0
-        overlayTextureHandle = textures[WhiteTranslucentShapesTexture::class.java]?.textureHandle ?: 0
-        iconsTextureHandle = textures[IconsTexture::class.java]?.textureHandle ?: 0
-        sampleImageTextureHandle = textures[SampleScreenTexture::class.java]?.textureHandle ?: 0
-        fontTextureHandle = textures[OrkneyTexture::class.java]?.textureHandle ?: 0
+
     }
 
     override fun drawScene(timeDeltaMillis: Double, stackManager: SceneStackManager) {
@@ -65,6 +53,11 @@ class HelpNavigatingScene : GlScene {
         // Get shaders and VBOs
         val mainShader = stackManager.getShader(AlphaTextureTransformShader::class.java) as? AlphaTextureTransformShader ?: return
         val fontShader = stackManager.getShader(FontTransformShader::class.java) as? FontTransformShader ?: return
+        val backgroundTexture = stackManager.getTexture(WoodenBackgroundTexture::class.java) ?: return
+        val overlayTexture = stackManager.getTexture(WhiteTranslucentShapesTexture::class.java) ?: return
+        val iconsTexture = stackManager.getTexture(IconsTexture::class.java) ?: return
+        val imagesTexture = stackManager.getTexture(SampleScreenTexture::class.java) ?: return
+        val fontTexture = stackManager.getTexture(OrkneyTexture::class.java) ?: return
         val backgroundVbo = stackManager.getVertexBuffer(MainScreenBackgroundVertexBuffer::class.java) ?: return
         val iconsVbo = stackManager.getVertexBuffer(HelpDetailsIconsVertexBuffer::class.java) ?: return
         val overlayVbo = stackManager.getVertexBuffer(HelpDetailsOverlayVertexBuffer::class.java) ?: return
@@ -80,7 +73,7 @@ class HelpNavigatingScene : GlScene {
 
         // Draw background vertices
         backgroundVbo.activate(mainShader)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backgroundTextureHandle)
+        backgroundTexture.activate()
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, backgroundVbo.subBufferVertexIndices[0], backgroundVbo.verticesInSubBuffer(0))
 
         // Transform the overlay and image slide
@@ -88,12 +81,12 @@ class HelpNavigatingScene : GlScene {
 
         // Draw background vertices
         overlayVbo.activate(mainShader)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, overlayTextureHandle)
+        overlayTexture.activate()
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, overlayVbo.subBufferVertexIndices[0], overlayVbo.verticesInSubBuffer(0))
 
         // Draw background vertices
         imagesVbo.activate(mainShader)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, sampleImageTextureHandle)
+        imagesTexture.activate()
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, imagesVbo.subBufferVertexIndices[0], imagesVbo.verticesInSubBuffer(0))
 
         // Don't transform the icons
@@ -101,7 +94,7 @@ class HelpNavigatingScene : GlScene {
 
         // Draw background vertices
         iconsVbo.activate(mainShader)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, iconsTextureHandle)
+        iconsTexture.activate()
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, iconsVbo.subBufferVertexIndices[0], iconsVbo.verticesInSubBuffer(0))
 
         // Set font program
@@ -111,7 +104,7 @@ class HelpNavigatingScene : GlScene {
         // Draw heading in white
         textsVbo.activate(fontShader)
         fontShader.setPaintColour(1.0f, 1.0f, 1.0f, 1.0f)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fontTextureHandle)
+        fontTexture.activate()
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, textsVbo.subBufferVertexIndices[0], textsVbo.verticesInSubBuffer(0))
 
         // Transform the context text
@@ -119,7 +112,6 @@ class HelpNavigatingScene : GlScene {
 
         // Draw text body in black
         fontShader.setPaintColour(0.0f, 0.0f, 0.0f, 1.0f)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fontTextureHandle)
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, textsVbo.subBufferVertexIndices[1], textsVbo.verticesInSubBuffer(1))
 
         // Unbind

@@ -8,6 +8,7 @@ import com.grimace.metronomeamplified.caches.ShaderCache
 import com.grimace.metronomeamplified.caches.TextureCache
 import com.grimace.metronomeamplified.caches.VertexBufferCache
 import com.grimace.metronomeamplified.components.GlShader
+import com.grimace.metronomeamplified.components.GlTexture
 import com.grimace.metronomeamplified.components.GlVertexBuffer
 import com.grimace.metronomeamplified.scenes.MainScene
 import com.grimace.metronomeamplified.traits.GlScene
@@ -115,6 +116,10 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer, SceneStackManag
 
     override fun <T : GlShader> getShader(shaderClass: Class<T>): GlShader? {
         return shaderCache[shaderClass]
+    }
+
+    override fun <T : GlTexture> getTexture(textureClass: Class<T>): GlTexture? {
+        return textureCache[textureClass]
     }
 
     fun onPointerDown(x: Float, y: Float) {

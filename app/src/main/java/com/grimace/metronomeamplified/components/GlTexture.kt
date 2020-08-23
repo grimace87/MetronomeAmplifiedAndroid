@@ -13,6 +13,10 @@ abstract class GlTexture {
 
     abstract fun getBitmap(context: Context): Bitmap
 
+    fun activate() {
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle)
+    }
+
     fun loadTextureReturningError(context: Context): String? {
 
         // Read texture asset into Bitmap

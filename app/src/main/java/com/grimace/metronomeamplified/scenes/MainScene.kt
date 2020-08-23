@@ -29,22 +29,12 @@ class MainScene : GlScene {
     override val requiredVertexBuffers: List<Class<out GlVertexBuffer>>
         get() = listOf(MainScreenBackgroundVertexBuffer::class.java, MainScreenTranslucentOverlayVertexBuffer::class.java, MainScreenIconsVertexBuffer::class.java, MainScreenIconLabelsVertexBuffer::class.java)
 
-    // Textures
-    private var backgroundTextureHandle = 0
-    private var overlayTextureHandle = 0
-    private var iconsTextureHandle = 0
-    private var fontTextureHandle = 0
-
     override fun onResourcesAvailable(
         shaders: ShaderCache,
         textures: TextureCache,
         vertexBuffers: VertexBufferCache
     ) {
-        // Pre-fetch handles for textures
-        backgroundTextureHandle = textures[WoodenBackgroundTexture::class.java]?.textureHandle ?: 0
-        overlayTextureHandle = textures[WhiteTranslucentShapesTexture::class.java]?.textureHandle ?: 0
-        iconsTextureHandle = textures[IconsTexture::class.java]?.textureHandle ?: 0
-        fontTextureHandle = textures[OrkneyTexture::class.java]?.textureHandle ?: 0
+
     }
 
     override fun drawScene(timeDeltaMillis: Double, stackManager: SceneStackManager) {
@@ -57,6 +47,10 @@ class MainScene : GlScene {
         // Get shaders and VBOs
         val mainShader = stackManager.getShader(AlphaTextureShader::class.java) ?: return
         val fontShader = stackManager.getShader(FontShader::class.java) as? FontShader ?: return
+        val backgroundTexture = stackManager.getTexture(WoodenBackgroundTexture::class.java) ?: return
+        val overlayTexture = stackManager.getTexture(WhiteTranslucentShapesTexture::class.java) ?: return
+        val iconsTexture = stackManager.getTexture(IconsTexture::class.java) ?: return
+        val fontTexture = stackManager.getTexture(OrkneyTexture::class.java) ?: return
         val backgroundVbo = stackManager.getVertexBuffer(MainScreenBackgroundVertexBuffer::class.java) ?: return
         val overlayVbo = stackManager.getVertexBuffer(MainScreenTranslucentOverlayVertexBuffer::class.java) ?: return
         val iconsVbo = stackManager.getVertexBuffer(MainScreenIconsVertexBuffer::class.java) ?: return
@@ -67,17 +61,17 @@ class MainScene : GlScene {
 
         // Draw background vertices
         backgroundVbo.activate(mainShader)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backgroundTextureHandle)
+        backgroundTexture.activate()
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, backgroundVbo.subBufferVertexIndices[0], backgroundVbo.verticesInSubBuffer(0))
 
         // Draw overlay vertices
         overlayVbo.activate(mainShader)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, overlayTextureHandle)
+        overlayTexture.activate()
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, overlayVbo.subBufferVertexIndices[0], overlayVbo.verticesInSubBuffer(0))
 
         // Draw icon vertices
         iconsVbo.activate(mainShader)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, iconsTextureHandle)
+        iconsTexture.activate()
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, iconsVbo.subBufferVertexIndices[0], iconsVbo.verticesInSubBuffer(0))
 
         // Set font program
@@ -86,7 +80,7 @@ class MainScene : GlScene {
 
         // Draw font vertices
         labelsVbo.activate(fontShader)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fontTextureHandle)
+        fontTexture.activate()
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, labelsVbo.subBufferVertexIndices[0], labelsVbo.verticesInSubBuffer(0))
 
         // Unbind

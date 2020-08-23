@@ -25,18 +25,12 @@ class HelpHubScene : GlScene {
     override val requiredVertexBuffers: List<Class<out GlVertexBuffer>>
         get() = listOf(MainScreenBackgroundVertexBuffer::class.java, HelpHubTextsVertexBuffer::class.java)
 
-    // Textures
-    private var backgroundTextureHandle = 0
-    private var fontTextureHandle = 0
-
     override fun onResourcesAvailable(
         shaders: ShaderCache,
         textures: TextureCache,
         vertexBuffers: VertexBufferCache
     ) {
-        // Pre-fetch handles for textures
-        backgroundTextureHandle = textures[WoodenBackgroundTexture::class.java]?.textureHandle ?: 0
-        fontTextureHandle = textures[OrkneyTexture::class.java]?.textureHandle ?: 0
+
     }
 
     override fun drawScene(timeDeltaMillis: Double, stackManager: SceneStackManager) {
@@ -49,6 +43,8 @@ class HelpHubScene : GlScene {
         // Get shaders and VBOs
         val mainShader = stackManager.getShader(AlphaTextureShader::class.java) ?: return
         val fontShader = stackManager.getShader(FontShader::class.java) as? FontShader ?: return
+        val backgroundTexture = stackManager.getTexture(WoodenBackgroundTexture::class.java) ?: return
+        val fontTexture = stackManager.getTexture(OrkneyTexture::class.java) ?: return
         val backgroundVbo = stackManager.getVertexBuffer(MainScreenBackgroundVertexBuffer::class.java) ?: return
         val textsVbo = stackManager.getVertexBuffer(HelpHubTextsVertexBuffer::class.java) ?: return
 
@@ -57,7 +53,7 @@ class HelpHubScene : GlScene {
 
         // Draw background vertices
         backgroundVbo.activate(mainShader)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backgroundTextureHandle)
+        backgroundTexture.activate()
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, backgroundVbo.subBufferVertexIndices[0], backgroundVbo.verticesInSubBuffer(0))
 
         // Set font program
@@ -66,12 +62,11 @@ class HelpHubScene : GlScene {
         // Draw first line of text in white
         textsVbo.activate(fontShader)
         fontShader.setPaintColour(1.0f, 1.0f, 1.0f, 1.0f)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fontTextureHandle)
+        fontTexture.activate()
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, textsVbo.subBufferVertexIndices[0], textsVbo.verticesInSubBuffer(0))
 
         // Draw remaining lines in the sand (colour)
         fontShader.setPaintColour(0.96f, 0.87f, 0.70f, 1.0f)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fontTextureHandle)
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, textsVbo.subBufferVertexIndices[1], textsVbo.verticesInSubBuffer(1))
 
         // Unbind
