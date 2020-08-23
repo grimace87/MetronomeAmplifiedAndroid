@@ -14,7 +14,6 @@ import com.grimace.metronomeamplified.components.textures.*
 import com.grimace.metronomeamplified.components.vertexbuffers.*
 import com.grimace.metronomeamplified.traits.GlScene
 import com.grimace.metronomeamplified.traits.SceneStackManager
-import kotlin.math.max
 
 class HelpNavigatingScene : GlScene {
 
@@ -46,7 +45,8 @@ class HelpNavigatingScene : GlScene {
     private var animateToTheRight = true
     private var animationProgress = 0.0f
     private val identityMatrix = FloatArray(16).apply { Matrix.setIdentityM(this, 0) }
-    private val transformMatrix = FloatArray(16)
+    private val transformLeftMatrix = FloatArray(16)
+    private val transformRightMatrix = FloatArray(16)
 
     override fun onResourcesAvailable(
         shaders: ShaderCache,
@@ -86,23 +86,40 @@ class HelpNavigatingScene : GlScene {
         backgroundTexture.activate()
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, backgroundVbo.subBufferVertexIndices[0], backgroundVbo.verticesInSubBuffer(0))
 
-        // Transform the overlay and image slide
-        mainShader.setTransformationMatrix(transformMatrix, 0)
+        // Draw the overlay, either for one motionless slide or for each animating slide
+        if (!isAnimating) {
 
-        // Draw background vertices
-        overlayVbo.activate(mainShader)
-        overlayTexture.activate()
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, overlayVbo.subBufferVertexIndices[0], overlayVbo.verticesInSubBuffer(0))
+            // Overlay
+            overlayVbo.activate(mainShader)
+            overlayTexture.activate()
+            mainShader.setTransformationMatrix(transformLeftMatrix, 0)
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, overlayVbo.subBufferVertexIndices[0], overlayVbo.verticesInSubBuffer(0))
 
-        // Draw background vertices
-        imagesVbo.activate(mainShader)
-        imagesTexture.activate()
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, imagesVbo.subBufferVertexIndices[0], imagesVbo.verticesInSubBuffer(0))
+            // Image
+            imagesVbo.activate(mainShader)
+            imagesTexture.activate()
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, imagesVbo.subBufferVertexIndices[0], imagesVbo.verticesInSubBuffer(0))
+        } else {
 
-        // Don't transform the icons
+            // Overlay
+            overlayVbo.activate(mainShader)
+            overlayTexture.activate()
+            mainShader.setTransformationMatrix(transformLeftMatrix, 0)
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, overlayVbo.subBufferVertexIndices[0], overlayVbo.verticesInSubBuffer(0))
+            mainShader.setTransformationMatrix(transformRightMatrix, 0)
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, overlayVbo.subBufferVertexIndices[0], overlayVbo.verticesInSubBuffer(0))
+
+            // Image
+            imagesVbo.activate(mainShader)
+            imagesTexture.activate()
+            mainShader.setTransformationMatrix(transformLeftMatrix, 0)
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, imagesVbo.subBufferVertexIndices[0], imagesVbo.verticesInSubBuffer(0))
+            mainShader.setTransformationMatrix(transformRightMatrix, 0)
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, imagesVbo.subBufferVertexIndices[0], imagesVbo.verticesInSubBuffer(0))
+        }
+
+        // Draw icons, no transform applied
         mainShader.setTransformationMatrix(identityMatrix, 0)
-
-        // Draw background vertices
         iconsVbo.activate(mainShader)
         iconsTexture.activate()
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, iconsVbo.subBufferVertexIndices[0], iconsVbo.verticesInSubBuffer(0))
@@ -118,11 +135,20 @@ class HelpNavigatingScene : GlScene {
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, textsVbo.subBufferVertexIndices[0], textsVbo.verticesInSubBuffer(0))
 
         // Transform the context text
-        fontShader.setTransformationMatrix(transformMatrix, 0)
-
-        // Draw text body in black
         fontShader.setPaintColour(0.0f, 0.0f, 0.0f, 1.0f)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, textsVbo.subBufferVertexIndices[1], textsVbo.verticesInSubBuffer(1))
+        if (!isAnimating) {
+            fontShader.setTransformationMatrix(transformLeftMatrix, 0)
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, textsVbo.subBufferVertexIndices[focusCard + 1], textsVbo.verticesInSubBuffer(focusCard + 1))
+        } else {
+            val leftSlide = when (animateToTheRight) {
+                true -> focusCard
+                false -> focusCard - 1
+            }
+            fontShader.setTransformationMatrix(transformLeftMatrix, 0)
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, textsVbo.subBufferVertexIndices[leftSlide + 1], textsVbo.verticesInSubBuffer(leftSlide + 1))
+            fontShader.setTransformationMatrix(transformRightMatrix, 0)
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, textsVbo.subBufferVertexIndices[leftSlide + 2], textsVbo.verticesInSubBuffer(leftSlide + 2))
+        }
 
         // Unbind
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)
@@ -130,12 +156,12 @@ class HelpNavigatingScene : GlScene {
     }
 
     private fun moveToNext() {
-        if (isAnimating || focusCard > 2) {
+        if (isAnimating || focusCard >= 7) {
             return
         }
         focusCard++
         isAnimating = true
-        animateToTheRight = true
+        animateToTheRight = false
         animationProgress = 0.0f
     }
 
@@ -145,20 +171,35 @@ class HelpNavigatingScene : GlScene {
         }
         focusCard--
         isAnimating = true
-        animateToTheRight = false
+        animateToTheRight = true
         animationProgress = 0.0f
     }
 
     private fun updateMatrices(timeDeltaMillis: Double) {
-        Matrix.setIdentityM(transformMatrix, 0)
+        val animationDuration = 0.3f
+        Matrix.setIdentityM(transformLeftMatrix, 0)
         if (isAnimating) {
-            animationProgress += (timeDeltaMillis / 2000.0).toFloat()
+            Matrix.setIdentityM(transformRightMatrix, 0)
+            animationProgress += (0.001 * timeDeltaMillis / animationDuration).toFloat()
             if (animationProgress >= 1.0f) {
                 animationProgress = 1.0f
                 isAnimating = false
+                return
             }
-            val scale = max(animationProgress, 1.0f - animationProgress)
-            Matrix.scaleM(transformMatrix, 0, scale, scale, 1.0f)
+            val scaleOut = 0.66666667f + animationDuration / (9.0f * animationProgress + 3.0f * animationDuration)
+            val scaleIn = 0.66666667f + animationDuration / (9.0f * (1.0f - animationProgress) + 3.0f * animationDuration)
+
+            if (animateToTheRight) {
+                Matrix.scaleM(transformLeftMatrix, 0, scaleIn, scaleIn, 1.0f)
+                Matrix.scaleM(transformRightMatrix, 0, scaleOut, scaleOut, 1.0f)
+                Matrix.translateM(transformLeftMatrix, 0, 2.0f * (-1.0f + animationProgress) / scaleIn, 0.0f, 0.0f)
+                Matrix.translateM(transformRightMatrix, 0, 2.0f * animationProgress / scaleOut, 0.0f, 0.0f)
+            } else {
+                Matrix.scaleM(transformLeftMatrix, 0, scaleOut, scaleOut, 1.0f)
+                Matrix.scaleM(transformRightMatrix, 0, scaleIn, scaleIn, 1.0f)
+                Matrix.translateM(transformLeftMatrix, 0, -2.0f * animationProgress / scaleOut, 0.0f, 0.0f)
+                Matrix.translateM(transformRightMatrix, 0, 2.0f * (1.0f - animationProgress) / scaleIn, 0.0f, 0.0f)
+            }
         }
     }
 

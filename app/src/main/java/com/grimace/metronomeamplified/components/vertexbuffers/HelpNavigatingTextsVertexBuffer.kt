@@ -12,7 +12,7 @@ class HelpNavigatingTextsVertexBuffer : GlVertexBuffer() {
 
     override val isWindowSizeDependent: Boolean = true
 
-    override val subBufferVertexIndices: IntArray = intArrayOf(0, 0, 0)
+    override val subBufferVertexIndices: IntArray = intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
     override val regionsOfInterest: Array<RectF> = arrayOf()
 
@@ -36,7 +36,14 @@ class HelpNavigatingTextsVertexBuffer : GlVertexBuffer() {
         val font = getOrkneyFontDescription(context)
         val labels = arrayOf(
             "Navigating the App",
-            "The pattern of percussive beats you'll play along with are displayed here. The time signature is shown, along with the timing of each note, in case you're familiar with musical notation. A song consists of one or more of these sections, each with its own note pattern, and therefore can be very simple or very complex."
+            "The pattern of percussive beats you'll play along with are displayed here. The time signature is shown, along with the timing of each note, in case you're familiar with musical notation. A song consists of one or more of these sections, each with its own note pattern, and therefore can be very simple or very complex.",
+            "Playback is controlled with the buttons at the bottom. Fast-forward and rewind have a use only with songs that have multiple sections. Pausing will halt the current position in the current section, while stopping will reset the playback position to the beginning.",
+            "A section of a song has a default tempo, although the tempo it is being played at can vary. Tapping the beat-per-minute count will reset to the default tempo, while the slider allows free manual adjustments.",
+            "Training modes exist to alter the tempo automatically while you play, or set a limit to how long you'd like to play. Pressing the One-touch Tempo Lift button will begin tempo control, and this feature can be customised through the settings screen.",
+            "The timer will allow you to set a timespan before the metronome stops playing.",
+            "There is more than one set of sounds that the metronome can play - they can be loaded by pressing the Tone button.",
+            "The song and its sections can be fully customised by tapping the Song button.",
+            "Various settings are accessible by tapping the Settings button. These settings control the Tempo Lift behaviour, as well as visual cues to coincide with the sounds you here."
         )
         var totalFloatCount = 0
         labels.forEach { totalFloatCount += FLOATS_PER_QUAD * it.length }
@@ -51,6 +58,27 @@ class HelpNavigatingTextsVertexBuffer : GlVertexBuffer() {
         font.printTextIntoVbo(vboData, bufferIndex, labels[1], w2, h2, w3 - w2, h2 - h1, bodyTextHeight, screenSize, Gravity.START, Gravity.START)
         bufferIndex += FLOATS_PER_QUAD * labels[1].length
         subBufferVertexIndices[2] = bufferIndex / FLOATS_PER_VERTEX
+        font.printTextIntoVbo(vboData, bufferIndex, labels[2], w2, h2, w3 - w2, h2 - h1, bodyTextHeight, screenSize, Gravity.START, Gravity.START)
+        bufferIndex += FLOATS_PER_QUAD * labels[2].length
+        subBufferVertexIndices[3] = bufferIndex / FLOATS_PER_VERTEX
+        font.printTextIntoVbo(vboData, bufferIndex, labels[3], w2, h2, w3 - w2, h2 - h1, bodyTextHeight, screenSize, Gravity.START, Gravity.START)
+        bufferIndex += FLOATS_PER_QUAD * labels[3].length
+        subBufferVertexIndices[4] = bufferIndex / FLOATS_PER_VERTEX
+        font.printTextIntoVbo(vboData, bufferIndex, labels[4], w2, h2, w3 - w2, h2 - h1, bodyTextHeight, screenSize, Gravity.START, Gravity.START)
+        bufferIndex += FLOATS_PER_QUAD * labels[4].length
+        subBufferVertexIndices[5] = bufferIndex / FLOATS_PER_VERTEX
+        font.printTextIntoVbo(vboData, bufferIndex, labels[5], w2, h2, w3 - w2, h2 - h1, bodyTextHeight, screenSize, Gravity.START, Gravity.START)
+        bufferIndex += FLOATS_PER_QUAD * labels[5].length
+        subBufferVertexIndices[6] = bufferIndex / FLOATS_PER_VERTEX
+        font.printTextIntoVbo(vboData, bufferIndex, labels[6], w2, h2, w3 - w2, h2 - h1, bodyTextHeight, screenSize, Gravity.START, Gravity.START)
+        bufferIndex += FLOATS_PER_QUAD * labels[6].length
+        subBufferVertexIndices[7] = bufferIndex / FLOATS_PER_VERTEX
+        font.printTextIntoVbo(vboData, bufferIndex, labels[7], w2, h2, w3 - w2, h2 - h1, bodyTextHeight, screenSize, Gravity.START, Gravity.START)
+        bufferIndex += FLOATS_PER_QUAD * labels[7].length
+        subBufferVertexIndices[8] = bufferIndex / FLOATS_PER_VERTEX
+        font.printTextIntoVbo(vboData, bufferIndex, labels[8], w2, h2, w3 - w2, h2 - h1, bodyTextHeight, screenSize, Gravity.START, Gravity.START)
+        bufferIndex += FLOATS_PER_QUAD * labels[8].length
+        subBufferVertexIndices[9] = bufferIndex / FLOATS_PER_VERTEX
 
         return vboData.toFloatBuffer()
     }
