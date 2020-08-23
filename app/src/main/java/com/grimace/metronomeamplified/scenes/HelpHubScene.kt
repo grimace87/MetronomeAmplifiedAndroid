@@ -81,12 +81,16 @@ class HelpHubScene : GlScene {
         fontProgramPaintColor = GLES20.glGetUniformLocation(fontProgramHandle, "uPaintColor")
     }
 
-    override fun drawScene(timeDeltaMillis: Double) {
+    override fun drawScene(timeDeltaMillis: Double, stackManager: SceneStackManager) {
 
         // Clear
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
         GLES20.glEnable(GLES20.GL_BLEND)
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
+
+        // Get VBOs
+        val backgroundVbo: GlVertexBuffer = stackManager.getVertexBuffer(MainScreenBackgroundVertexBuffer::class.java) ?: return
+        val textsVbo: GlVertexBuffer = stackManager.getVertexBuffer(HelpHubTextsVertexBuffer::class.java) ?: return
 
         // Set main program and active texture
         GLES20.glUseProgram(mainProgramHandle)
@@ -104,7 +108,7 @@ class HelpHubScene : GlScene {
 
         // Draw background vertices
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backgroundTextureHandle)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, backgroundVbo.subBufferVertexIndices[0], backgroundVbo.verticesInSubBuffer(0))
 
         // Set font program
         GLES20.glUseProgram(fontProgramHandle)
@@ -122,12 +126,12 @@ class HelpHubScene : GlScene {
         // Draw first line of text in white
         GLES20.glUniform4f(fontProgramPaintColor, 1.0f, 1.0f, 1.0f, 1.0f)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fontTextureHandle)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 78)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, textsVbo.subBufferVertexIndices[0], textsVbo.verticesInSubBuffer(0))
 
         // Draw remaining lines in the sand (colour)
         GLES20.glUniform4f(fontProgramPaintColor, 0.96f, 0.87f, 0.70f, 1.0f)
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fontTextureHandle)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 78, 486)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, textsVbo.subBufferVertexIndices[1], textsVbo.verticesInSubBuffer(1))
 
         // Unbind
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)

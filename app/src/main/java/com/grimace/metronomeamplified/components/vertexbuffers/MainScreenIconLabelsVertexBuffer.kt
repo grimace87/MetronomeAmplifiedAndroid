@@ -5,6 +5,7 @@ import android.graphics.PointF
 import android.graphics.RectF
 import android.view.Gravity
 import com.grimace.metronomeamplified.components.FLOATS_PER_QUAD
+import com.grimace.metronomeamplified.components.FLOATS_PER_VERTEX
 import com.grimace.metronomeamplified.components.GlVertexBuffer
 import java.nio.FloatBuffer
 
@@ -12,7 +13,9 @@ class MainScreenIconLabelsVertexBuffer : GlVertexBuffer() {
 
     override val isWindowSizeDependent: Boolean = true
 
-    override val regionsOfInterest: List<RectF> = listOf()
+    override val subBufferVertexIndices: IntArray = intArrayOf(0, 0)
+
+    override val regionsOfInterest: Array<RectF> = arrayOf()
 
     override fun generateVerticesForSize(context: Context, width: Int, height: Int): FloatBuffer {
 
@@ -64,6 +67,7 @@ class MainScreenIconLabelsVertexBuffer : GlVertexBuffer() {
         bufferIndex += FLOATS_PER_QUAD * labels[4].length
         font.printTextIntoVbo(vboData, bufferIndex, labels[5], w8, hLowerIconsLabelTop, w9 - w8, hLowerIconsLabelTop - h2, maxTextHeightPixels, screenSize, Gravity.CENTER_HORIZONTAL, Gravity.CENTER_VERTICAL)
         bufferIndex += FLOATS_PER_QUAD * labels[5].length
+        subBufferVertexIndices[1] = bufferIndex / FLOATS_PER_VERTEX
 
         return vboData.toFloatBuffer()
     }

@@ -4,13 +4,16 @@ import android.content.Context
 import android.graphics.RectF
 import com.grimace.metronomeamplified.components.FLOATS_PER_QUAD
 import com.grimace.metronomeamplified.components.GlVertexBuffer
+import com.grimace.metronomeamplified.components.VERTICES_PER_QUAD
 import java.nio.FloatBuffer
 
 class HelpDetailsIconsVertexBuffer : GlVertexBuffer() {
 
     override val isWindowSizeDependent: Boolean = true
 
-    override val regionsOfInterest: List<RectF> = listOf(RectF(), RectF())
+    override val subBufferVertexIndices: IntArray = intArrayOf(0, VERTICES_PER_QUAD * 2)
+
+    override val regionsOfInterest: Array<RectF> = arrayOf(RectF(), RectF())
 
     override fun generateVerticesForSize(context: Context, width: Int, height: Int): FloatBuffer {
 

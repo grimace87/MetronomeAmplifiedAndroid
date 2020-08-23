@@ -93,12 +93,18 @@ class MainScene : GlScene {
         fontProgramPaintColor = GLES20.glGetUniformLocation(fontProgramHandle, "uPaintColor")
     }
 
-    override fun drawScene(timeDeltaMillis: Double) {
+    override fun drawScene(timeDeltaMillis: Double, stackManager: SceneStackManager) {
 
         // Clear
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
         GLES20.glEnable(GLES20.GL_BLEND)
         GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
+
+        // Get VBOs
+        val backgroundVbo: GlVertexBuffer = stackManager.getVertexBuffer(MainScreenBackgroundVertexBuffer::class.java) ?: return
+        val overlayVbo: GlVertexBuffer = stackManager.getVertexBuffer(MainScreenTranslucentOverlayVertexBuffer::class.java) ?: return
+        val iconsVbo: GlVertexBuffer = stackManager.getVertexBuffer(MainScreenIconsVertexBuffer::class.java) ?: return
+        val labelsVbo: GlVertexBuffer = stackManager.getVertexBuffer(MainScreenIconLabelsVertexBuffer::class.java) ?: return
 
         // Set main program and active texture
         GLES20.glUseProgram(mainProgramHandle)
@@ -116,7 +122,7 @@ class MainScene : GlScene {
 
         // Draw background vertices
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, backgroundTextureHandle)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, backgroundVbo.subBufferVertexIndices[0], backgroundVbo.verticesInSubBuffer(0))
 
         // Load vertex array
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, overlayVertexBufferHandle)
@@ -129,7 +135,7 @@ class MainScene : GlScene {
 
         // Draw overlay vertices
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, overlayTextureHandle)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 108)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, overlayVbo.subBufferVertexIndices[0], overlayVbo.verticesInSubBuffer(0))
 
         // Load vertex array
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, iconsVertexBufferHandle)
@@ -142,7 +148,7 @@ class MainScene : GlScene {
 
         // Draw icon vertices
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, iconsTextureHandle)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 36)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, iconsVbo.subBufferVertexIndices[0], iconsVbo.verticesInSubBuffer(0))
 
         // Set font program
         GLES20.glUseProgram(fontProgramHandle)
@@ -160,7 +166,7 @@ class MainScene : GlScene {
 
         // Draw font vertices
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, fontTextureHandle)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 174)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, labelsVbo.subBufferVertexIndices[0], labelsVbo.verticesInSubBuffer(0))
 
         // Unbind
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0)

@@ -12,6 +12,8 @@ import kotlin.math.abs
 
 const val FLOAT_SIZE_BYTES = 4
 const val FLOATS_PER_QUAD = 30
+const val FLOATS_PER_VERTEX = 5
+const val VERTICES_PER_QUAD = 6
 
 abstract class GlVertexBuffer {
 
@@ -32,8 +34,8 @@ abstract class GlVertexBuffer {
     private var isValid = false
 
     abstract val isWindowSizeDependent: Boolean
-
-    abstract val regionsOfInterest: List<RectF>
+    abstract val subBufferVertexIndices: IntArray
+    abstract val regionsOfInterest: Array<RectF>
 
     fun regionOfInterestAt(xNormalised: Float, yNormalised: Float): Int {
         regionsOfInterest.forEachIndexed { index, region ->
@@ -42,6 +44,10 @@ abstract class GlVertexBuffer {
             }
         }
         return -1
+    }
+
+    fun verticesInSubBuffer(index: Int): Int {
+        return (subBufferVertexIndices[index + 1] - subBufferVertexIndices[index])
     }
 
     protected abstract fun generateVerticesForSize(context: Context, width: Int, height: Int): FloatBuffer

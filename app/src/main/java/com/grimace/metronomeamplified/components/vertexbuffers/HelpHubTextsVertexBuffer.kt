@@ -5,6 +5,7 @@ import android.graphics.PointF
 import android.graphics.RectF
 import android.view.Gravity
 import com.grimace.metronomeamplified.components.FLOATS_PER_QUAD
+import com.grimace.metronomeamplified.components.FLOATS_PER_VERTEX
 import com.grimace.metronomeamplified.components.GlVertexBuffer
 import java.nio.FloatBuffer
 
@@ -12,7 +13,9 @@ class HelpHubTextsVertexBuffer : GlVertexBuffer() {
 
     override val isWindowSizeDependent: Boolean = true
 
-    override val regionsOfInterest: List<RectF> = listOf(RectF(), RectF(), RectF(), RectF())
+    override val subBufferVertexIndices: IntArray = intArrayOf(0, 0, 0)
+
+    override val regionsOfInterest: Array<RectF> = arrayOf(RectF(), RectF(), RectF(), RectF())
 
     override fun generateVerticesForSize(context: Context, width: Int, height: Int): FloatBuffer {
 
@@ -47,6 +50,7 @@ class HelpHubTextsVertexBuffer : GlVertexBuffer() {
         val maxTextHeightPixels = 2.0f * marginDips * displayMetrics.density
         font.printTextIntoVbo(vboData, bufferIndex, labels[0], leftX, t1, rightX - leftX, t1 - t2, maxTextHeightPixels, screenSize, Gravity.START, Gravity.CENTER_VERTICAL)
         bufferIndex += FLOATS_PER_QUAD * labels[0].length
+        subBufferVertexIndices[1] = bufferIndex / FLOATS_PER_VERTEX
         font.printTextIntoVbo(vboData, bufferIndex, labels[1], leftX, t2, rightX - leftX, t2 - t3, maxTextHeightPixels, screenSize, Gravity.START, Gravity.CENTER_VERTICAL)
         bufferIndex += FLOATS_PER_QUAD * labels[1].length
         font.printTextIntoVbo(vboData, bufferIndex, labels[2], leftX, t3, rightX - leftX, t3 - t4, maxTextHeightPixels, screenSize, Gravity.START, Gravity.CENTER_VERTICAL)
@@ -55,6 +59,7 @@ class HelpHubTextsVertexBuffer : GlVertexBuffer() {
         bufferIndex += FLOATS_PER_QUAD * labels[3].length
         font.printTextIntoVbo(vboData, bufferIndex, labels[4], leftX, t5, rightX - leftX, t5 - t6, maxTextHeightPixels, screenSize, Gravity.START, Gravity.CENTER_VERTICAL)
         bufferIndex += FLOATS_PER_QUAD * labels[4].length
+        subBufferVertexIndices[2] = bufferIndex / FLOATS_PER_VERTEX
 
         // Note the normal y direction for RectF is positive downward, so swap top and bottom here
         regionsOfInterest[0].set(leftX, t3, rightX, t2)

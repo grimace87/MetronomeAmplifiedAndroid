@@ -96,7 +96,7 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer, SceneStackManag
         val timeDelta = currentTime - lastTimeUpdate
         lastTimeUpdate = currentTime
         val currentScene = sceneStack.peek()
-        currentScene.drawScene(timeDelta.toDouble())
+        currentScene.drawScene(timeDelta.toDouble(), this)
     }
 
     fun stackSize(): Int {
@@ -106,6 +106,10 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer, SceneStackManag
     override fun <T : GlVertexBuffer> checkForPointOfInterest(vboClass: Class<T>, normalisedX: Float, normalisedY: Float): Int {
         val vbo = vertexBufferCache[vboClass] ?: return -1
         return vbo.regionOfInterestAt(normalisedX, normalisedY)
+    }
+
+    override fun <T : GlVertexBuffer> getVertexBuffer(vboClass: Class<T>): GlVertexBuffer? {
+        return vertexBufferCache[vboClass]
     }
 
     fun onPointerDown(x: Float, y: Float) {
