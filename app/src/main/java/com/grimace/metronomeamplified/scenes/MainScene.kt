@@ -11,7 +11,7 @@ import com.grimace.metronomeamplified.components.textures.IconsTexture
 import com.grimace.metronomeamplified.components.textures.OrkneyTexture
 import com.grimace.metronomeamplified.components.textures.WhiteTranslucentShapesTexture
 import com.grimace.metronomeamplified.components.textures.WoodenBackgroundTexture
-import com.grimace.metronomeamplified.components.vertexbuffers.MainScreenBackgroundVertexBuffer
+import com.grimace.metronomeamplified.components.vertexbuffers.BackgroundVertexBuffer
 import com.grimace.metronomeamplified.components.vertexbuffers.MainScreenIconLabelsVertexBuffer
 import com.grimace.metronomeamplified.components.vertexbuffers.MainScreenIconsVertexBuffer
 import com.grimace.metronomeamplified.components.vertexbuffers.MainScreenTranslucentOverlayVertexBuffer
@@ -27,7 +27,7 @@ class MainScene : GlScene {
         get() = listOf(WoodenBackgroundTexture::class.java, WhiteTranslucentShapesTexture::class.java, OrkneyTexture::class.java, IconsTexture::class.java)
 
     override val requiredVertexBuffers: List<Class<out GlVertexBuffer>>
-        get() = listOf(MainScreenBackgroundVertexBuffer::class.java, MainScreenTranslucentOverlayVertexBuffer::class.java, MainScreenIconsVertexBuffer::class.java, MainScreenIconLabelsVertexBuffer::class.java)
+        get() = listOf(BackgroundVertexBuffer::class.java, MainScreenTranslucentOverlayVertexBuffer::class.java, MainScreenIconsVertexBuffer::class.java, MainScreenIconLabelsVertexBuffer::class.java)
 
     private lateinit var mainShader: GlShader
     private lateinit var fontShader: FontShader
@@ -51,7 +51,7 @@ class MainScene : GlScene {
         overlayTexture = textures[WhiteTranslucentShapesTexture::class.java]!!
         iconsTexture = textures[IconsTexture::class.java]!!
         fontTexture = textures[OrkneyTexture::class.java]!!
-        backgroundVbo = vertexBuffers[MainScreenBackgroundVertexBuffer::class.java]!!
+        backgroundVbo = vertexBuffers[BackgroundVertexBuffer::class.java]!!
         overlayVbo = vertexBuffers[MainScreenTranslucentOverlayVertexBuffer::class.java]!!
         iconsVbo = vertexBuffers[MainScreenIconsVertexBuffer::class.java]!!
         labelsVbo = vertexBuffers[MainScreenIconLabelsVertexBuffer::class.java]!!

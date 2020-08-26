@@ -6,7 +6,7 @@ import android.opengl.GLES20
 import com.grimace.metronomeamplified.components.*
 import java.nio.FloatBuffer
 
-class MainScreenBackgroundVertexBuffer : GlVertexBuffer() {
+class BackgroundVertexBuffer : GlVertexBuffer() {
 
     override val isWindowSizeDependent: Boolean = true
 

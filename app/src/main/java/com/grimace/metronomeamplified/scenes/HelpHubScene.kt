@@ -9,7 +9,7 @@ import com.grimace.metronomeamplified.components.shaders.AlphaTextureShader
 import com.grimace.metronomeamplified.components.shaders.FontShader
 import com.grimace.metronomeamplified.components.textures.OrkneyTexture
 import com.grimace.metronomeamplified.components.textures.WoodenBackgroundTexture
-import com.grimace.metronomeamplified.components.vertexbuffers.MainScreenBackgroundVertexBuffer
+import com.grimace.metronomeamplified.components.vertexbuffers.BackgroundVertexBuffer
 import com.grimace.metronomeamplified.components.vertexbuffers.HelpHubTextsVertexBuffer
 import com.grimace.metronomeamplified.traits.GlScene
 import com.grimace.metronomeamplified.traits.SceneStackManager
@@ -23,7 +23,7 @@ class HelpHubScene : GlScene {
         get() = listOf(WoodenBackgroundTexture::class.java, OrkneyTexture::class.java)
 
     override val requiredVertexBuffers: List<Class<out GlVertexBuffer>>
-        get() = listOf(MainScreenBackgroundVertexBuffer::class.java, HelpHubTextsVertexBuffer::class.java)
+        get() = listOf(BackgroundVertexBuffer::class.java, HelpHubTextsVertexBuffer::class.java)
 
     private lateinit var mainShader: GlShader
     private lateinit var fontShader: FontShader
@@ -41,7 +41,7 @@ class HelpHubScene : GlScene {
         fontShader = shaders[FontShader::class.java]!! as FontShader
         backgroundTexture = textures[WoodenBackgroundTexture::class.java]!!
         fontTexture = textures[OrkneyTexture::class.java]!!
-        backgroundVbo = vertexBuffers[MainScreenBackgroundVertexBuffer::class.java]!!
+        backgroundVbo = vertexBuffers[BackgroundVertexBuffer::class.java]!!
         textsVbo = vertexBuffers[HelpHubTextsVertexBuffer::class.java]!!
     }
 

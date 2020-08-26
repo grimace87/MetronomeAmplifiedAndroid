@@ -24,7 +24,7 @@ class HelpNavigatingScene : GlScene {
         get() = listOf(WoodenBackgroundTexture::class.java, OrkneyTexture::class.java, WhiteTranslucentShapesTexture::class.java, IconsTexture::class.java, SampleScreenTexture::class.java)
 
     override val requiredVertexBuffers: List<Class<out GlVertexBuffer>>
-        get() = listOf(MainScreenBackgroundVertexBuffer::class.java, HelpDetailsOverlayVertexBuffer::class.java, HelpDetailsIconsVertexBuffer::class.java, HelpNavigatingTextsVertexBuffer::class.java, HelpNavigatingImagesVertexBuffer::class.java)
+        get() = listOf(BackgroundVertexBuffer::class.java, HelpDetailsOverlayVertexBuffer::class.java, HelpDetailsIconsVertexBuffer::class.java, HelpNavigatingTextsVertexBuffer::class.java, HelpNavigatingImagesVertexBuffer::class.java)
 
     private lateinit var mainShader: AlphaTextureTransformShader
     private lateinit var fontShader: FontTransformShader
@@ -60,7 +60,7 @@ class HelpNavigatingScene : GlScene {
         iconsTexture = textures[IconsTexture::class.java]!!
         imagesTexture = textures[SampleScreenTexture::class.java]!!
         fontTexture = textures[OrkneyTexture::class.java]!!
-        backgroundVbo = vertexBuffers[MainScreenBackgroundVertexBuffer::class.java]!!
+        backgroundVbo = vertexBuffers[BackgroundVertexBuffer::class.java]!!
         iconsVbo = vertexBuffers[HelpDetailsIconsVertexBuffer::class.java]!!
         overlayVbo = vertexBuffers[HelpDetailsOverlayVertexBuffer::class.java]!!
         imagesVbo = vertexBuffers[HelpNavigatingImagesVertexBuffer::class.java]!!
