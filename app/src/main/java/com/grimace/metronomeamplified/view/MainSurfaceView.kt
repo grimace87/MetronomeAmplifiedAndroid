@@ -4,10 +4,11 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.opengl.GLSurfaceView
 import android.view.MotionEvent
+import com.grimace.metronomeamplified.MainActivity
 import com.grimace.metronomeamplified.renderer.MainRenderer
 
 @SuppressLint("ViewConstructor")
-class MainSurfaceView(activity: Activity) : GLSurfaceView(activity) {
+class MainSurfaceView(activity: MainActivity) : GLSurfaceView(activity) {
 
     private val renderer: MainRenderer
     private val locationArray = intArrayOf(0, 0)

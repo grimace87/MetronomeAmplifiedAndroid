@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
+import com.grimace.metronomeamplified.MainActivity
 import com.grimace.metronomeamplified.caches.FramebufferCache
 import com.grimace.metronomeamplified.caches.ShaderCache
 import com.grimace.metronomeamplified.caches.TextureCache
@@ -22,7 +23,7 @@ import java.util.*
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
-class MainRenderer(activity: Activity) : GLSurfaceView.Renderer, SceneStackManager {
+class MainRenderer(activity: MainActivity) : GLSurfaceView.Renderer, SceneStackManager {
 
     private var surfaceWidth = 0
     private var surfaceHeight = 0
@@ -159,6 +160,7 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer, SceneStackManag
         if (sceneStack.isNotEmpty()) {
             val topScene = sceneStack.peek()
             topScene.onPointerDown(normalisedX, normalisedY, this)
+            activity.get()?.startAudio()
         }
     }
 
