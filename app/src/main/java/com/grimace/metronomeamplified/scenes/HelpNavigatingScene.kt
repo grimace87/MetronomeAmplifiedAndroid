@@ -2,9 +2,11 @@ package com.grimace.metronomeamplified.scenes
 
 import android.opengl.GLES20
 import android.opengl.Matrix
+import com.grimace.metronomeamplified.caches.FramebufferCache
 import com.grimace.metronomeamplified.caches.ShaderCache
 import com.grimace.metronomeamplified.caches.TextureCache
 import com.grimace.metronomeamplified.caches.VertexBufferCache
+import com.grimace.metronomeamplified.components.GlFramebuffer
 import com.grimace.metronomeamplified.components.GlShader
 import com.grimace.metronomeamplified.components.GlTexture
 import com.grimace.metronomeamplified.components.GlVertexBuffer
@@ -25,6 +27,9 @@ class HelpNavigatingScene : GlScene {
 
     override val requiredVertexBuffers: List<Class<out GlVertexBuffer>>
         get() = listOf(BackgroundVertexBuffer::class.java, HelpDetailsOverlayVertexBuffer::class.java, HelpDetailsIconsVertexBuffer::class.java, HelpNavigatingTextsVertexBuffer::class.java, HelpNavigatingImagesVertexBuffer::class.java)
+
+    override val requiredFramebuffers: List<Class<out GlFramebuffer>>
+        get() = listOf()
 
     private lateinit var mainShader: AlphaTextureTransformShader
     private lateinit var fontShader: FontTransformShader
@@ -51,7 +56,8 @@ class HelpNavigatingScene : GlScene {
     override fun onResourcesAvailable(
         shaders: ShaderCache,
         textures: TextureCache,
-        vertexBuffers: VertexBufferCache
+        vertexBuffers: VertexBufferCache,
+        framebuffers: FramebufferCache
     ) {
         mainShader = shaders[AlphaTextureTransformShader::class.java] as AlphaTextureTransformShader
         fontShader = shaders[FontTransformShader::class.java]!! as FontTransformShader

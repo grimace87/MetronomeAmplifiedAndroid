@@ -4,13 +4,16 @@ import android.app.Activity
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
+import com.grimace.metronomeamplified.caches.FramebufferCache
 import com.grimace.metronomeamplified.caches.ShaderCache
 import com.grimace.metronomeamplified.caches.TextureCache
 import com.grimace.metronomeamplified.caches.VertexBufferCache
+import com.grimace.metronomeamplified.components.GlFramebuffer
 import com.grimace.metronomeamplified.components.GlShader
 import com.grimace.metronomeamplified.components.GlTexture
 import com.grimace.metronomeamplified.components.GlVertexBuffer
 import com.grimace.metronomeamplified.scenes.MainScene
+import com.grimace.metronomeamplified.scenes.TransitionScene
 import com.grimace.metronomeamplified.traits.GlScene
 import com.grimace.metronomeamplified.traits.SceneStackManager
 import java.lang.RuntimeException
@@ -30,18 +33,14 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer, SceneStackManag
     private val shaderCache = ShaderCache()
     private val textureCache = TextureCache()
     private val vertexBufferCache = VertexBufferCache()
+    private val framebufferCache = FramebufferCache()
+
+    private val mTransitionScene = TransitionScene()
 
     override fun pushScene(scene: GlScene) {
-        val context: Context = activity.get() ?: return
+        beginTransition()
         lastTimeUpdate = System.currentTimeMillis()
-        shaderCache.requireShaders(context, scene.requiredShaders)
-        textureCache.requireTextures(context, scene.requiredTextures)
-        vertexBufferCache.requireVertexBuffers(
-            scene.requiredVertexBuffers,
-            context,
-            surfaceWidth,
-            surfaceHeight)
-        scene.onResourcesAvailable(shaderCache, textureCache, vertexBufferCache)
+        requireSceneResources(scene)
         sceneStack.push(scene)
     }
 
@@ -75,6 +74,22 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer, SceneStackManag
         }
     }
 
+    private fun requireSceneResources(scene: GlScene) {
+        val context: Context = activity.get() ?: return
+        shaderCache.requireShaders(context, scene.requiredShaders)
+        textureCache.requireTextures(context, scene.requiredTextures)
+        vertexBufferCache.requireVertexBuffers(
+            scene.requiredVertexBuffers,
+            context,
+            surfaceWidth,
+            surfaceHeight)
+        framebufferCache.requireFramebuffers(
+            scene.requiredFramebuffers,
+            surfaceWidth,
+            surfaceHeight)
+        scene.onResourcesAvailable(shaderCache, textureCache, vertexBufferCache, framebufferCache)
+    }
+
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         GLES20.glClearColor(0f, 0f, 0f, 1f)
         pushScene(MainScene())
@@ -84,8 +99,12 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer, SceneStackManag
         GLES20.glViewport(0, 0, width, height)
         surfaceWidth = width
         surfaceHeight = height
+
         vertexBufferCache.invalidateSizeDependentBuffers()
         verifyTopmostScene()
+
+        framebufferCache.clearFramebuffers()
+        requireSceneResources(mTransitionScene)
     }
 
     override fun onDrawFrame(gl: GL10?) {
@@ -98,7 +117,11 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer, SceneStackManag
         val timeDelta = currentTime - lastTimeUpdate
         lastTimeUpdate = currentTime
         val currentScene = sceneStack.peek()
-        currentScene.drawScene(timeDelta.toDouble(), this)
+        currentScene.drawScene(timeDeltaMillis = timeDelta.toDouble(), stackManager = this)
+
+        if (mTransitionScene.mIsTransitioning) {
+            mTransitionScene.drawScene(timeDeltaMillis = timeDelta.toDouble(), stackManager = this)
+        }
     }
 
     fun stackSize(): Int {
@@ -122,6 +145,10 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer, SceneStackManag
         return textureCache[textureClass]
     }
 
+    override fun <T : GlFramebuffer> getFramebuffer(framebufferClass: Class<T>): GlFramebuffer? {
+        return framebufferCache[framebufferClass]
+    }
+
     fun onPointerDown(x: Float, y: Float) {
         if (surfaceWidth == 0 || surfaceHeight == 0) {
             throw RuntimeException("Cannot process touch events before surface size is set")
@@ -133,5 +160,13 @@ class MainRenderer(activity: Activity) : GLSurfaceView.Renderer, SceneStackManag
             val topScene = sceneStack.peek()
             topScene.onPointerDown(normalisedX, normalisedY, this)
         }
+    }
+
+    private fun beginTransition() {
+        if (sceneStack.isEmpty()) {
+            return
+        }
+        val scene = sceneStack.peek()
+        mTransitionScene.startTransitionWith(scene = scene, stackManager = this)
     }
 }

@@ -1,6 +1,7 @@
 package com.grimace.metronomeamplified.scenes
 
 import android.opengl.GLES20
+import com.grimace.metronomeamplified.caches.FramebufferCache
 import com.grimace.metronomeamplified.caches.ShaderCache
 import com.grimace.metronomeamplified.caches.TextureCache
 import com.grimace.metronomeamplified.caches.VertexBufferCache
@@ -25,6 +26,9 @@ class HelpHubScene : GlScene {
     override val requiredVertexBuffers: List<Class<out GlVertexBuffer>>
         get() = listOf(BackgroundVertexBuffer::class.java, HelpHubTextsVertexBuffer::class.java)
 
+    override val requiredFramebuffers: List<Class<out GlFramebuffer>>
+        get() = listOf()
+
     private lateinit var mainShader: GlShader
     private lateinit var fontShader: FontShader
     private lateinit var backgroundTexture: GlTexture
@@ -35,7 +39,8 @@ class HelpHubScene : GlScene {
     override fun onResourcesAvailable(
         shaders: ShaderCache,
         textures: TextureCache,
-        vertexBuffers: VertexBufferCache
+        vertexBuffers: VertexBufferCache,
+        framebuffers: FramebufferCache
     ) {
         mainShader = shaders[AlphaTextureShader::class.java]!!
         fontShader = shaders[FontShader::class.java]!! as FontShader
