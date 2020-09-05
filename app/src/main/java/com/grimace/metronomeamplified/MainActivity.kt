@@ -1,5 +1,6 @@
 package com.grimace.metronomeamplified
 
+import android.content.res.AssetManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.grimace.metronomeamplified.traits.AudioInterface
@@ -13,6 +14,8 @@ class MainActivity : AppCompatActivity(), AudioInterface {
         }
     }
 
+    private external fun nativeInitialiseAudio(assetManager: AssetManager)
+    private external fun nativeReleaseAudio()
     private external fun nativeStartAudio()
     private external fun nativeStopAudio()
 
@@ -22,11 +25,12 @@ class MainActivity : AppCompatActivity(), AudioInterface {
         super.onCreate(savedInstanceState)
         surfaceView = MainSurfaceView(this)
         setContentView(surfaceView)
+        nativeInitialiseAudio(assets)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        stopAudio()
+        nativeReleaseAudio()
     }
 
     override fun onBackPressed() {
