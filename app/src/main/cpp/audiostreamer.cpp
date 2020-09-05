@@ -1,4 +1,6 @@
 #include "audiostreamer.h"
+
+#include "song.h"
 #include <string>
 #include <android/log.h>
 #include <android/asset_manager.h>
@@ -6,7 +8,7 @@
 #define LOG_ERR(fmt, val) __android_log_print(ANDROID_LOG_ERROR, "AudioTest", fmt, val)
 #define RET_ERR_RES(fmt) if (result != oboe::Result::OK) { LOG_ERR(fmt, oboe::convertToText(result)); return; }
 
-AudioStreamer::AudioStreamer() noexcept : mIsPlaying(false), mStream(nullptr), mBufferHead(0) {}
+AudioStreamer::AudioStreamer() noexcept : mIsPlaying(false), mStream(nullptr), mBufferHead(0), mSong(nullptr) {}
 
 AudioStreamer::~AudioStreamer() {
     if (mIsPlaying) {
@@ -94,4 +96,6 @@ void AudioStreamer::fillFrames(int16_t* buffer, size_t length) {
     }
 }
 
-
+void AudioStreamer::setSong(Song* song) {
+    mSong.reset(song);
+}

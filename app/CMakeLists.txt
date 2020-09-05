@@ -7,7 +7,12 @@ add_library(nativeaudio
             src/main/cpp/main.cpp
             src/main/cpp/audiostreamer.cpp
             src/main/cpp/filebuffers.cpp
-            src/main/cpp/wavereader.cpp)
+            src/main/cpp/wavereader.cpp
+            src/main/cpp/byteswap.cpp
+            src/main/cpp/enums.cpp
+            src/main/cpp/song.cpp
+            src/main/cpp/section.cpp
+            src/main/cpp/note.cpp)
 
 # Find NDK APIs
 find_library(android-lib android)
