@@ -105,6 +105,8 @@ class MainScene : GlScene {
         val vboRegion = stackManager.checkForPointOfInterest(MainScreenIconsVertexBuffer::class.java, normalisedX, normalisedY)
         when (vboRegion) {
             2 -> stackManager.pushScene(HelpHubScene())
+            7 -> stackManager.getAudioController()?.startAudio()
+            9 -> stackManager.getAudioController()?.stopAudio()
             else -> {}
         }
     }

@@ -1,6 +1,5 @@
 package com.grimace.metronomeamplified.renderer
 
-import android.app.Activity
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
@@ -15,6 +14,7 @@ import com.grimace.metronomeamplified.components.GlTexture
 import com.grimace.metronomeamplified.components.GlVertexBuffer
 import com.grimace.metronomeamplified.scenes.MainScene
 import com.grimace.metronomeamplified.scenes.TransitionScene
+import com.grimace.metronomeamplified.traits.AudioInterface
 import com.grimace.metronomeamplified.traits.GlScene
 import com.grimace.metronomeamplified.traits.SceneStackManager
 import java.lang.RuntimeException
@@ -91,6 +91,10 @@ class MainRenderer(activity: MainActivity) : GLSurfaceView.Renderer, SceneStackM
         scene.onResourcesAvailable(shaderCache, textureCache, vertexBufferCache, framebufferCache)
     }
 
+    override fun getAudioController(): AudioInterface? {
+        return activity.get()
+    }
+
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         GLES20.glClearColor(0f, 0f, 0f, 1f)
         pushScene(MainScene())
@@ -160,7 +164,6 @@ class MainRenderer(activity: MainActivity) : GLSurfaceView.Renderer, SceneStackM
         if (sceneStack.isNotEmpty()) {
             val topScene = sceneStack.peek()
             topScene.onPointerDown(normalisedX, normalisedY, this)
-            activity.get()?.startAudio()
         }
     }
 

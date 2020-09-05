@@ -11,9 +11,10 @@ class MainScreenIconsVertexBuffer : GlVertexBuffer() {
 
     override val isWindowSizeDependent: Boolean = true
 
-    override val subBufferVertexIndices: IntArray = intArrayOf(0, VERTICES_PER_QUAD * 6)
+    override val subBufferVertexIndices: IntArray = intArrayOf(0, VERTICES_PER_QUAD * 10)
 
-    override val regionsOfInterest: Array<RectF> = arrayOf(RectF(), RectF(), RectF(), RectF())
+    override val regionsOfInterest: Array<RectF> = arrayOf(
+        RectF(), RectF(), RectF(), RectF(), RectF(), RectF(), RectF(), RectF(), RectF(), RectF())
 
     override fun generateVerticesForSize(context: Context, width: Int, height: Int): FloatBuffer {
 
@@ -48,20 +49,36 @@ class MainScreenIconsVertexBuffer : GlVertexBuffer() {
         val hIconTop = 1.0f
         val hLowerIconsLabelTop = h2 + 0.25f * (h3 - h2)
 
-        val data = FloatArray(FLOATS_PER_QUAD * 6)
+        val playLeft = w4 + (w7 - w4) / 3.0f - marginUnitsW
+        val playRight = w7 - (w7 - w4) / 3.0f + marginUnitsW
+        val playBottom = h1 + 0.5f * (h4 - h1) - 2.0f * marginUnitsH
+
+        val data = FloatArray(FLOATS_PER_QUAD * 10)
 
         data.putSquareCentredInside(0, hIcon1Left, hIconBottom, hIcon2Left, hIconTop, 0.0f, 0.5f, 0.25f, 0.0f, screenSize)
         data.putSquareCentredInside(1 * FLOATS_PER_QUAD, hIcon2Left, hIconBottom, hIcon3Left, hIconTop, 0.25f, 0.5f, 0.5f, 0.0f, screenSize)
         data.putSquareCentredInside(2 * FLOATS_PER_QUAD, hIcon3Left, hIconBottom, hIcon4Left, hIconTop, 0.5f, 0.5f, 0.75f, 0.0f, screenSize)
         data.putSquareCentredInside(3 * FLOATS_PER_QUAD, hIcon4Left, hIconBottom, hIcon4Right, hIconTop, 0.75f, 0.5f, 1.0f, 0.0f, screenSize)
+
         data.putSquareCentredInside(4 * FLOATS_PER_QUAD, w2, hLowerIconsLabelTop, w3, h3, 0.0f, 1.0f, 0.25f, 0.5f, screenSize)
         data.putSquareCentredInside(5 * FLOATS_PER_QUAD, w8, hLowerIconsLabelTop, w9, h3, 0.25f, 1.0f, 0.5f, 0.5f, screenSize)
+
+        data.putSquareCentredInside(6 * FLOATS_PER_QUAD, w4, playBottom, playLeft, h4, 0.75f, 1.0f, 0.625f, 0.75f, screenSize)
+        data.putSquareCentredInside(7 * FLOATS_PER_QUAD, playLeft, playBottom, playRight, h4, 0.5f, 0.75f, 0.625f, 0.5f, screenSize)
+        data.putSquareCentredInside(8 * FLOATS_PER_QUAD, playRight, playBottom, w7, h4, 0.625f, 1.0f, 0.75f, 0.75f, screenSize)
+        data.putSquareCentredInside(9 * FLOATS_PER_QUAD, playLeft, h1, playRight, playBottom, 0.625f, 0.75f, 0.75f, 0.5f, screenSize)
 
         // Note the normal y direction for RectF is positive downward, so swap top and bottom here
         regionsOfInterest[0].set(hIcon1Left, hIconLabelBottom, hIcon2Left, hIconTop)
         regionsOfInterest[1].set(hIcon2Left, hIconLabelBottom, hIcon3Left, hIconTop)
         regionsOfInterest[2].set(hIcon3Left, hIconLabelBottom, hIcon4Left, hIconTop)
         regionsOfInterest[3].set(hIcon4Left, hIconLabelBottom, hIcon4Right, hIconTop)
+        regionsOfInterest[4].set(w2, h2, w3, h3)
+        regionsOfInterest[5].set(w8, h2, w9, h3)
+        regionsOfInterest[6].set(w4, playBottom, playLeft, h4)
+        regionsOfInterest[7].set(playLeft, playBottom, playRight, h4)
+        regionsOfInterest[8].set(playRight, playBottom, w7, h4)
+        regionsOfInterest[9].set(playLeft, h1, playRight, playBottom)
 
         return data.toFloatBuffer()
     }
