@@ -18,3 +18,24 @@ NoteType noteTypeFromNotesPerWhole(int32_t notesPerWhole) {
             return NoteType::WHOLE;
     }
 }
+
+Tuplet tupletFromCommonId(int32_t id) {
+    switch (id) {
+        case 0:
+            return Tuplet::NONE;
+        case 1:
+            return Tuplet::PUT_3_INTO_2;
+        case 2:
+            return Tuplet::PUT_5_INTO_4;
+        case 3:
+            return Tuplet::PUT_6_INTO_4;
+        case 4:
+            return Tuplet::PUT_7_INTO_4;
+        case 5:
+            return Tuplet::PUT_7_INTO_8;
+        case 6:
+            return Tuplet::PUT_9_INTO_8;
+        default:
+            return Tuplet::NONE;
+    }
+}

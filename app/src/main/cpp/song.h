@@ -6,7 +6,7 @@
 
 class Song {
     std::string mName;
-    Section mSection;
+    std::vector<Section> mSections;
 
 public:
     Song();

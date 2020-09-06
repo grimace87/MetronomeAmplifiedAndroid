@@ -6,6 +6,11 @@
 class Note {
     NoteType mNoteType;
     int32_t mAccent;
+    bool mIsSound;
+    bool mIsDotted;
+    Tuplet mTuplet;
+    int32_t mTieString;
+    double mNoteValue;
 
 public:
     Note();

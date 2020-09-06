@@ -6,6 +6,7 @@
 
 class Section {
     std::string mName;
+    int32_t mRepetitions;
     float mTempo;
     int32_t mBeatsPerMeasure;
     NoteType mBeatValue;

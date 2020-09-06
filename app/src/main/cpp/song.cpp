@@ -2,7 +2,7 @@
 
 #include "byteswap.h"
 
-Song::Song() : mName(), mSection() {}
+Song::Song() : mName(), mSections{} {}
 
 Song::Song(const jbyte* byteBuffer, size_t* bytesRead) {
 
@@ -20,10 +20,15 @@ Song::Song(const jbyte* byteBuffer, size_t* bytesRead) {
     size_t padding = (4 - totalBytesRead % 4) % 4;
     totalBytesRead += padding;
 
-    // Read section
-    size_t sectionBytes;
-    mSection = Section(byteBuffer + totalBytesRead, &sectionBytes);
-    totalBytesRead += sectionBytes;
+    // Read sections
+    int32_t noOfSections = reverseBytesI32(*(int32_t*)(byteBuffer + totalBytesRead));
+    totalBytesRead += sizeof(int32_t);
+    mSections.resize(noOfSections);
+    for (int section = 0; section < noOfSections; section++) {
+        size_t sectionBytes;
+        mSections[section] = Section(byteBuffer + totalBytesRead, &sectionBytes);
+        totalBytesRead += sectionBytes;
+    }
 
     // Output bytes read
     *bytesRead = totalBytesRead;

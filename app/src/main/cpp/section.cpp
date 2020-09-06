@@ -2,7 +2,7 @@
 
 #include "byteswap.h"
 
-Section::Section() : mName(), mTempo(108.0), mBeatsPerMeasure(4), mBeatValue(NoteType::QUARTER), mNotes{} {}
+Section::Section() : mName(), mRepetitions(1), mTempo(108.0), mBeatsPerMeasure(4), mBeatValue(NoteType::QUARTER), mNotes{} {}
 
 Section::Section(const jbyte* byteBuffer, size_t* bytesRead) {
 
@@ -21,6 +21,8 @@ Section::Section(const jbyte* byteBuffer, size_t* bytesRead) {
     totalBytesRead += padding;
 
     // Read primitive fields
+    mRepetitions = reverseBytesI32(*(int32_t*)(byteBuffer + totalBytesRead));
+    totalBytesRead += sizeof(int32_t);
     mTempo = reverseBytesF32(*(float*)(byteBuffer + totalBytesRead));
     totalBytesRead += sizeof(float);
     mBeatsPerMeasure = reverseBytesI32(*(int32_t*)(byteBuffer + totalBytesRead));
