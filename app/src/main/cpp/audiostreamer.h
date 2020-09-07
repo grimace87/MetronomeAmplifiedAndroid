@@ -1,5 +1,6 @@
 #pragma once
 
+#include "songplayer.h"
 #include "filebuffers.h"
 #include <oboe/Oboe.h>
 #include <android/asset_manager.h>
@@ -10,10 +11,7 @@ class AudioStreamer : public oboe::AudioStreamCallback {
 
     bool mIsPlaying;
     oboe::AudioStream* mStream;
-    FileBuffers mFileBuffers;
-    std::unique_ptr<Song> mSong;
-
-    size_t mBufferHead;
+    SongPlayer mSongPlayer;
 
     oboe::DataCallbackResult
     onAudioReady(oboe::AudioStream* oboeStream, void* audioData, int32_t numFrames) override;

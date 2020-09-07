@@ -8,6 +8,7 @@ add_library(nativeaudio
             src/main/cpp/audiostreamer.cpp
             src/main/cpp/filebuffers.cpp
             src/main/cpp/wavereader.cpp
+            src/main/cpp/songplayer.cpp
             src/main/cpp/byteswap.cpp
             src/main/cpp/enums.cpp
             src/main/cpp/song.cpp

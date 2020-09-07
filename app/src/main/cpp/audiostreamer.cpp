@@ -1,6 +1,5 @@
 #include "audiostreamer.h"
 
-#include "song.h"
 #include <string>
 #include <android/log.h>
 #include <android/asset_manager.h>
@@ -8,7 +7,11 @@
 #define LOG_ERR(fmt, val) __android_log_print(ANDROID_LOG_ERROR, "AudioTest", fmt, val)
 #define RET_ERR_RES(fmt) if (result != oboe::Result::OK) { LOG_ERR(fmt, oboe::convertToText(result)); return; }
 
-AudioStreamer::AudioStreamer() noexcept : mIsPlaying(false), mStream(nullptr), mBufferHead(0), mSong(nullptr) {}
+AudioStreamer::AudioStreamer() noexcept :
+    mIsPlaying(false),
+    mStream(nullptr),
+    mSongPlayer() {
+}
 
 AudioStreamer::~AudioStreamer() {
     if (mIsPlaying) {
@@ -17,12 +20,12 @@ AudioStreamer::~AudioStreamer() {
 }
 
 void AudioStreamer::initialise(AAssetManager* assetManager) {
-    mFileBuffers.createBuffers(assetManager);
+    mSongPlayer.initialise(assetManager);
 }
 
 void AudioStreamer::release() {
     stop();
-    mFileBuffers.releaseBuffers();
+    mSongPlayer.release();
 }
 
 oboe::DataCallbackResult
@@ -67,7 +70,6 @@ void AudioStreamer::start() {
         RET_ERR_RES("Error setting buffer size: %s")
     }
 
-    mBufferHead = 0;
     setStream(stream);
     result = stream->requestStart();
     RET_ERR_RES("Error starting stream: %s")
@@ -86,16 +88,9 @@ void AudioStreamer::stop() {
 }
 
 void AudioStreamer::fillFrames(int16_t* buffer, size_t length) {
-    std::vector<int16_t>& fileBuffer = mFileBuffers.getBuffer(0);
-    for (size_t n = 0; n < length; n++) {
-        if (mBufferHead >= fileBuffer.size()) {
-            mBufferHead = 0;
-        }
-        buffer[n] = fileBuffer[mBufferHead];
-        mBufferHead++;
-    }
+    mSongPlayer.fillFrames(buffer, length);
 }
 
 void AudioStreamer::setSong(Song* song) {
-    mSong.reset(song);
+    mSongPlayer.setSong(song);
 }
