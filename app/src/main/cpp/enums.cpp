@@ -19,6 +19,25 @@ NoteType noteTypeFromNotesPerWhole(int32_t notesPerWhole) {
     }
 }
 
+double noteValueOf(NoteType noteType) {
+    switch (noteType) {
+        case NoteType::WHOLE:
+            return 4.0;
+        case NoteType::HALF:
+            return 2.0;
+        case NoteType::QUARTER:
+            return 1.0;
+        case NoteType::EIGHTH:
+            return 0.5;
+        case NoteType::SIXTEENTH:
+            return 0.25;
+        case NoteType::THIRTY_SECOND:
+            return 0.125;
+        default:
+            return 1.0;
+    }
+}
+
 Tuplet tupletFromCommonId(int32_t id) {
     switch (id) {
         case 0:

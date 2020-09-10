@@ -23,4 +23,6 @@ enum class Tuplet {
 
 NoteType noteTypeFromNotesPerWhole(int32_t notesPerWhole);
 
+double noteValueOf(NoteType noteType);
+
 Tuplet tupletFromCommonId(int32_t id);

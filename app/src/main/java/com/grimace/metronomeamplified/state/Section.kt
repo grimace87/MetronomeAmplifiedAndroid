@@ -20,10 +20,10 @@ internal class Section private constructor(
     private val mNotes: List<Note> = notes
 
     companion object Factory {
-        fun newDefault(): Section {
+        fun stockSection1(): Section {
             return Section(
-                name = "New Section",
-                repetitions = 1,
+                name = "New Section 1",
+                repetitions = 3,
                 tempo = 108.0,
                 beatsPerMeasure = 4,
                 beatValue = NoteType.QUARTER,
@@ -33,6 +33,25 @@ internal class Section private constructor(
                     Note(NoteType.EIGHTH, accent = 0),
                     Note(NoteType.QUARTER, accent = 3),
                     Note(NoteType.QUARTER, accent = 0)
+                )
+            ).apply { calculateNoteDerivedAttributes() }
+        }
+
+        fun stockSection2(): Section {
+            return Section(
+                name = "New Section 2",
+                repetitions = 1,
+                tempo = 108.0,
+                beatsPerMeasure = 4,
+                beatValue = NoteType.QUARTER,
+                notes = listOf(
+                    Note(NoteType.EIGHTH, accent = 3),
+                    Note(NoteType.SIXTEENTH, accent = 0),
+                    Note(NoteType.SIXTEENTH, accent = 0),
+                    Note(NoteType.EIGHTH, accent = 2),
+                    Note(NoteType.QUARTER, accent = 3),
+                    Note(NoteType.EIGHTH, accent = 0),
+                    Note(NoteType.QUARTER, accent = 3)
                 )
             ).apply { calculateNoteDerivedAttributes() }
         }
@@ -52,7 +71,7 @@ internal class Section private constructor(
     fun writeToStream(dataStream: DataOutputStream) {
         dataStream.writeUTFString4ByteAligned(mName)
         dataStream.writeInt(mRepetitions)
-        dataStream.writeFloat(mTempo.toFloat())
+        dataStream.writeDouble(mTempo)
         dataStream.writeInt(mBeatsPerMeasure)
         dataStream.writeInt(mBeatValue.mNotesPerWhole)
         dataStream.writeInt(mNotes.size)

@@ -15,4 +15,6 @@ class Note {
 public:
     Note();
     Note(const jbyte* byteBuffer, size_t* bytesRead);
+    inline double getUnitValue() { return mNoteValue; }
+    inline int32_t getAccentNumber() { return mAccent; }
 };

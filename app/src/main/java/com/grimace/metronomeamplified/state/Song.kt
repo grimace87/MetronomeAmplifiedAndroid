@@ -14,7 +14,9 @@ class Song private constructor(name: String, sections: List<Section>) {
     companion object Factory {
         fun newDefault(): Song = Song(
             name = "New Song",
-            sections = listOf(Section.newDefault(), Section.newDefault())
+            sections = listOf(
+                Section.stockSection1(),
+                Section.stockSection2())
         )
     }
 

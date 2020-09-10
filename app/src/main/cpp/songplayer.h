@@ -7,12 +7,15 @@
 #include <android/asset_manager.h>
 
 class SongPlayer {
-    int mSectionNumber;
-    int mSectionRepetition;
+    int32_t mSectionNumber;
+    int32_t mSectionRepetition;
     double mSectionProgress;
     FileBuffers mFileBuffers;
     std::unique_ptr<Song> mSong;
-    size_t mBufferHead;
+    int64_t mSectionReaderHead;
+
+    static void fillWithAudio(int16_t* buffer, std::vector<int16_t>& source, size_t sourceOffset, size_t samples);
+    static void fillWithSilence(int16_t* buffer, size_t samples);
 
 public:
     SongPlayer();

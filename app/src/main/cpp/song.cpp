@@ -33,3 +33,7 @@ Song::Song(const jbyte* byteBuffer, size_t* bytesRead) {
     // Output bytes read
     *bytesRead = totalBytesRead;
 }
+
+Section& Song::getSection(int index) {
+    return mSections[index];
+}
